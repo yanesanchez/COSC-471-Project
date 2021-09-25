@@ -1,4 +1,4 @@
-# **COSC 471 Project: Best-Book-Buy Online Bookstore**
+# **Best-Book-Buy Online Bookstore**
 
 # **I. Project expectations**
 
