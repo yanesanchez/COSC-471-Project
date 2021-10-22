@@ -87,43 +87,54 @@ if(isset($_POST['register_submit'])){
         $data_missing[] = 'expiration';
     }
     else {
-        $expiration = trim($_POST['expiration']);
+        $expiration = date( "Y-m-d", strtotime(trim($_POST['expiration'])));
+
     }
 
     if(empty($data_missing)){
-		echo 'ok good';
-        require_once('../mysqli_connect.php');
 
-        $query = "INSERT INTO customer (username, pin, first_name, last_name, 
+        require_once('../PDO_connect.php');
+
+		$stmt = $pdo -> prepare("INSERT INTO customer (username, pin, first_name, last_name, 
         address, city, state, zip, credit_card, card_number, expiration) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        VALUES (:username, :pin, :first_name, :last_name, 
+        :address, :city, :state, :zip, :credit_card, :card_number, :expiration)");
 
-        $stmt = @mysqli_prepare($dbc, $query);
+		$stmt->bindParam(':username', $username);
+		$stmt->bindParam(':pin', $pin);
+		$stmt->bindParam(':first_name', $firstname);
+		$stmt->bindParam(':last_name', $lastname);
+		$stmt->bindParam(':address', $address);
+		$stmt->bindParam(':city', $city);
+		$stmt->bindParam(':state', $state);
+		$stmt->bindParam(':zip', $zip);
+		$stmt->bindParam(':credit_card', $credit_card);
+		$stmt->bindParam(':card_number', $card_number);
+		$stmt->bindParam(':expiration', $expiration);
 
-        mysqli_stmt_bind_param($stmt, "sisssssssss", $username, $pin, $firstname, 
-        $lastname, $address, $city, $state, $zip, $credit_card, $card_number, $expiration);
+		$stmt->execute();
 
-        mysqli_stmt_bind_param($stmt);
+      //  mysqli_stmt_bind_param($stmt, "sisssssssss", $username, $pin, $firstname, 
+      //  $lastname, $address, $city, $state, $zip, $credit_card, $card_number, $expiration);
 
-        $affected_rows = mysqli_stmt_affected_rows($stmt);
-		echo 'good good';
+       // mysqli_stmt_bind_param($stmt);
+
+             $affected_rows = $stmt->rowCount();
+
         if($affected_rows == 1){
             echo 'Customer added';
 
-            mysqli_stmt_close($stmt);
+            $stmt=null;
+			$pdo=null;
 
-            mysqli_close($dbc);
         }
 
         else{
             echo 'Error<br />';
-            echo mysqli_error();
 
-            mysqli_stmt_close($stmt);
-
-            mysqli_close($dbc);
+            $stmt=null;
+			$pdo=null;
         }
-
  //       else {
    //         echo 'enter the following data <br />';
 
@@ -136,112 +147,5 @@ if(isset($_POST['register_submit'])){
 }
 
 ?>
-<form id="register" action="customer_added.php" method="post">
-			<td align="right">
-				Username<span style="color:red">*</span>:
-			</td>
-			<td align="left" colspan="3">
-				<input type="text" id="username" name="username" placeholder="Enter your username">
-			</td>
-		</tr>
-		<tr>
-			<td align="right">
-				PIN<span style="color:red">*</span>:
-			</td>
-			<td align="left">
-				<input type="password" id="pin" name="pin">
-			</td>
-			<td align="right">
-				Re-type PIN<span style="color:red">*</span>:
-			</td>
-			<td align="left">
-				<input type="password" id="retype_pin" name="retype_pin">
-			</td>
-		</tr>
-		<tr>
-			<td align="right">
-				Firstname<span style="color:red">*</span>:
-			</td>
-			<td colspan="3" align="left">
-				<input type="text" id="firstname" name="firstname" placeholder="Enter your firstname">
-			</td>
-		</tr>
-		<tr>
-			<td align="right">
-				Lastname<span style="color:red">*</span>:
-			</td>
-			<td colspan="3" align="left">
-				<input type="text" id="lastname" name="lastname" placeholder="Enter your lastname">
-			</td>
-		</tr>
-		<tr>
-			<td align="right">
-				Address<span style="color:red">*</span>:
-			</td>
-			<td colspan="3" align="left">
-				<input type="text" id="address" name="address">
-			</td>
-		</tr>
-		<tr>
-			<td align="right">
-				City<span style="color:red">*</span>:
-			</td>
-			<td colspan="3" align="left">
-				<input type="text" id="city" name="city">
-			</td>
-		</tr>
-		<tr>
-			<td align="right">
-				State<span style="color:red">*</span>:
-			</td>
-			<td align="left">
-				<select id="state" name="state">
-				<option selected disabled>select a state</option>
-				<option>Michigan</option>
-				<option>California</option>
-				<option>Tennessee</option>
-				</select>
-			</td>
-			<td align="right">
-				Zip<span style="color:red">*</span>:
-			</td>
-			<td align="left">
-				<input type="text" id="zip" name="zip">
-			</td>
-		</tr>
-		<tr>
-			<td align="right">
-				Credit Card<span style="color:red">*</span>
-			</td>
-			<td align="left">
-				<select id="credit_card" name="credit_card">
-				<option selected disabled>select a card type</option>
-				<option>VISA</option>
-				<option>MASTER</option>
-				<option>DISCOVER</option>
-				</select>
-			</td>
-			<td colspan="2" align="left">
-				<input type="text" id="card_number" name="card_number" placeholder="Credit card number">
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2" align="right">
-				Expiration Date<span style="color:red">*</span>:
-			</td>
-			<td colspan="2" align="left">
-				<input type="text" id="expiration" name="expiration" placeholder="MM/YY">
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2" align="center"> 
-				<input type="submit" id="register_submit" name="register_submit" value="Register">
-			</td>
-			</form>
-			<form id="no_registration" action="index.php" method="post">
-			<td colspan="2" align="center">
-				<input type="submit" id="donotregister" name="donotregister" value="Don't Register">
-			</td>
-			</form>
 </body>
 </html>
