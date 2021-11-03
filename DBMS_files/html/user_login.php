@@ -1,4 +1,20 @@
 
+<?php
+session_start();
+
+if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
+	    header("location: screen2.php");
+    exit;
+}
+
+require_once('../PDO_connect.php');
+
+
+$username = $password = "";
+$username_err = $password_err = $login_err = "";
+
+?>
+
 <!DOCTYPE HTML>
 <head>
 <title>User Login</title>
@@ -33,5 +49,4 @@
 		</tr>
 	</table>
 </body>
-
 </html>
