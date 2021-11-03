@@ -1,5 +1,76 @@
 
 <!-- Figure 3: Search Result Screen by Prithviraj Narahari, php coding: Alexander Martens -->
+
+<?php
+require_once('../PDO_connect.php');
+if(isset($_GET['search'])){
+
+	$searchfor = trim($_GET['searchfor']);
+	$search_in = ($_GET['searchon']);
+	$category = trim($_GET['category']);
+
+	echo "$category";
+
+	$no_attributes = sizeof($search_in)-1;
+	$title_exists = 0;
+	$isbn_exists = 0;
+	$pstmt = "select isbn as ISBN, title as Title, (select name from AUTHOR where BOOK.author_id = id) as Author, (select name from CATEGORY where BOOK.category_id = id) as Category, (select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, price as Price from BOOK";
+	$attr = 0;
+	$title = FALSE;
+	$isbn = FALSE;
+	$author = FALSE;
+	$publisher = FALSE;
+	$tables = "";
+	$attr = "";
+	$where = "";
+	if($search_in[0] == 'anywhere'){
+	$pstmt.= " WHERE BOOK.author_id in (select id from AUTHOR where name like '%$searchfor%') 
+	OR BOOK.publisher_id in (select id from PUBLISHER where name like '%$searchfor%') 
+	OR BOOK.title LIKE '%$searchfor%'";
+	}
+	else {
+		foreach($search_in as $s){
+		if($s == "title")
+			$where .= "BOOK.title LIKE '%$searchfor%' ";
+		if($s == "isbn")
+			$where .= "BOOK.isbn LIKE '%$searchfor%' ";
+		if($s == "author")
+			$where .= "BOOK.author_id in (select id from AUTHOR where name like '%$searchfor%') ";
+		if($s == "publisher")
+			$where .= "BOOK.publisher_id in (select id from PUBLISHER where name like '%$searchfor%') ";
+		if($s != $search_in[sizeof($search_in)-1])
+			$where.="OR ";
+
+
+	}
+	$pstmt.=" WHERE ".$where;
+	}
+	if($category != "all")
+	$pstmt.=" OR BOOK.category_id ".'='." $category";
+
+	echo "$pstmt";
+
+	$stmt = $pdo->prepare("$pstmt");
+	$stmt -> execute();
+
+	$result = $stmt->fetchall(PDO::FETCH_ASSOC);
+
+}
+
+
+function display_books($result){
+
+foreach ($result as $row){
+	echo '<tr><td align='.'left'.'><button name='.'btnCart'. 'id='.'btnCart' .'onClick='.'cart("'.$row['ISBN'].'", "", '."Array".', "all")'.'>Add to Cart</button></td><td rowspan='.'2' .'align='.'left'.'>'.$row['Title'].'</br>
+		By '. $row['Author'].':</b> McGraw-Hill,</br><b>ISBN:</b> '.$row['ISBN'].'</t> <b>Price:</b> '.$row['Price'].'</td></tr><tr>
+		<td align='.'left'.'><button name='.'review'.' id='.'review'.' onClick='.'review("'.$row['ISBN'].'", "'.$row['Title'].'")'.'>Reviews</button></td></tr><tr>
+		<td colspan='.'2'.'><p>_______________________________________________</p></td></tr>';
+}
+}
+function display_error($searchfor){
+	echo 'No Results found for "'.$searchfor.'"';
+}
+?>
 <html>
 <head>
 	<title> Search Result - 3-B.com </title>
@@ -12,6 +83,10 @@
 	function cart(isbn, searchfor, searchon, category){
 		window.location.href="screen3.php?cartisbn="+ isbn + "&searchfor=" + searchfor + "&searchon=" + searchon + "&category=" + category;
 	}
+	function add_to_cart(isbn){
+		
+	}
+
 	</script>
 </head>
 <body>
@@ -35,7 +110,13 @@
 		<td style="width: 350px" colspan="3" align="center">
 			<div id="bookdetails" style="overflow:scroll;height:180px;width:400px;border:1px solid black;background-color:LightBlue">
 			<table>
-			<tr><td align='left'><button name='btnCart' id='btnCart' onClick='cart("123441", "", "Array", "all")'>Add to Cart</button></td><td rowspan='2' align='left'>iuhdf</br>By Avi Silberschatz</br><b>Publisher:</b> McGraw-Hill,</br><b>ISBN:</b> 123441</t> <b>Price:</b> 12.99</td></tr><tr><td align='left'><button name='review' id='review' onClick='review("123441", "iuhdf")'>Reviews</button></td></tr><tr><td colspan='2'><p>_______________________________________________</p></td></tr><tr><td align='left'><button name='btnCart' id='btnCart' onClick='cart("978-0316055437", "", "Array", "all")'>Add to Cart</button></td><td rowspan='2' align='left'>title</br>By fname lname</br><b>Publisher:</b> pub,</br><b>ISBN:</b> 978-0316055437</t> <b>Price:</b> 12.99</td></tr><tr><td align='left'><button name='review' id='review' onClick='review("978-0316055437", "title")'>Reviews</button></td></tr><tr><td colspan='2'><p>_______________________________________________</p></td></tr><tr><td align='left'><button name='btnCart' id='btnCart' onClick='cart("978-0345339706", "", "Array", "all")'>Add to Cart</button></td><td rowspan='2' align='left'>Lord of the Rings, The Fellowship of the</br>By J.R.R. Tolkien</br><b>Publisher:</b> Del Rey,</br><b>ISBN:</b> 978-0345339706</t> <b>Price:</b> 8.09</td></tr><tr><td align='left'><button name='review' id='review' onClick='review("978-0345339706", "Lord of the Rings, The Fellowship of the")'>Reviews</button></td></tr><tr><td colspan='2'><p>_______________________________________________</p></td></tr><tr><td align='left'><button name='btnCart' id='btnCart' onClick='cart("978-0590353427", "", "Array", "all")'>Add to Cart</button></td><td rowspan='2' align='left'>Harry Potter and the Sorcerer Stone</br>By J.K. Rowling</br><b>Publisher:</b> Scholastic,</br><b>ISBN:</b> 978-0590353427</t> <b>Price:</b> 8.47</td></tr><tr><td align='left'><button name='review' id='review' onClick='review("978-0590353427", "Harry Potter and the Sorcerer Stone")'>Reviews</button></td></tr><tr><td colspan='2'><p>_______________________________________________</p></td></tr>			</table>
+			<?php
+			if(count($result) > 0)
+			display_books($result);
+			else
+			display_error($searchfor);
+			?>
+			</table>
 			</div>
 			
 			</td>
