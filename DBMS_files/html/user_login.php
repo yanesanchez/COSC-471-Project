@@ -1,18 +1,58 @@
 
 <?php
+ob_start();
 session_start();
 
-if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
-	    header("location: screen2.php");
+error_reporting(-1);
+ini_set('display_errors', 'On');
+
+if(isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['username']) && !empty($_POST['pin'])){
+	require_once('../PDO_connect.php');
+
+	$username = trim($_POST['username']);
+	$pin = trim($_POST['pin']);
+	$stmt = $pdo -> prepare("SELECT * FROM REGISTERED_USER WHERE username = :username AND pin = :pin");
+	$stmt -> bindParam(':username', $username);
+	$stmt -> bindParam(':pin', $pin);
+
+	$stmt -> execute();
+
+	$count = $stmt->rowCount();
+
+	if ($count == 1){
+
+	$row = $stmt->fetch();
+	$uid = $row['id'];
+
+	$_SESSION['valid'] = true;
+	$_SESSION['username'] = $username;
+	$_SESSION['user_id'] = $uid;
+	$_POST['username'] = "";
+	$_POST['pin'] = "";
+
+	header("location: screen2.php");
     exit;
+	}
+	else
+	echo "<script>console.log('login unsuccessful');</script>";
 }
 
-require_once('../PDO_connect.php');
 
+function debug_to_console($data) {
+    $output = $data;
+    if (is_array($output))
+        $output = implode(',', $output);
 
-$username = $password = "";
-$username_err = $password_err = $login_err = "";
+    echo "<script>console.log('Debug Objects: " . $output . "' );</script>";
+}
 
+//$username = $password = "";
+//$username_err = $password_err = $login_err = "";
+
+?>
+<?
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
 ?>
 
 <!DOCTYPE HTML>
@@ -21,13 +61,13 @@ $username_err = $password_err = $login_err = "";
 </head>
 <body>
 	<table align="center" style="border:2px solid blue;">
-		<form action="screen2.php" method="post" id="login_screen">
+		<form method="post" id="login_screen">
 		<tr>
 			<td align="right">
 				Username<span style="color:red">*</span>:
 			</td>
 			<td align="left">
-				<input type="text" name="username" id="username">
+				<input type="text" name="username" id="username" value = <?php if(isset($_POST['username'])) echo $_POST['username']?>>
 			</td>
 			<td align="right">
 				<input type="submit" name="login" id="login" value="Login">
@@ -41,10 +81,11 @@ $username_err = $password_err = $login_err = "";
 				<input type="password" name="pin" id="pin">
 			</td>
 			</form>
-			<form action="index.php" method="post" id="login_screen">
+			<form action="" method="post" id="login_screen_cancel">
 			<td align="right">
 				<input type="submit" name="cancel" id="cancel" value="Cancel">
 			</td>
+			<?php if(isset($_POST['username'])) echo "<tr><td></td><td align = \"center\" style = \"color:red\">ENTER A VALID USERNAME AND PASSWORD </td><td></td></tr>" ?>
 			</form>
 		</tr>
 	</table>
