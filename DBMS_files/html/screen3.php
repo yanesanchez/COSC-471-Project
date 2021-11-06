@@ -3,33 +3,53 @@
 
 <?php
 require_once('../PDO_connect.php');
-if(isset($_GET['search'])){
+ob_start();
+session_start();
+echo "session : ".$_SESSION['valid']."search : ".$_GET['search'];
+if(isset($_GET['searchfor'])){	
+
+	$uid = $_SESSION['user_id'];
+
+	if(!empty($_GET['cartisbn'])){
+		echo "cartisbn : ".$_GET['cartisbn'];
+		$price = $_GET['price'];
+		$isbn = $_GET['cartisbn'];
+		$stmt = $pdo -> prepare("SELECT id from SHOPPING_CART WHERE SHOPPING_CART.user_id = $uid");
+		$stmt->execute();
+		$result = $stmt -> fetch();
+		$cart_id = $result['id'];
+		$stmt = $pdo -> prepare("INSERT INTO CART_ITEM (cart_id, isbn, price) VALUES (:cart_id, :isbn, :price)");
+		echo "cart_id : $cart_id";
+		$stmt -> bindParam(':cart_id', $cart_id);
+		$stmt -> bindParam(':isbn', $isbn);
+		$stmt -> bindParam(':price', $price);
+		$stmt->execute();
+		unset($_GET['cartisbn']);
+	}
+
+	echo $_SESSION['username'];
+	echo $_SESSION['user_id'];
 
 	$searchfor = trim($_GET['searchfor']);
-	$search_in = ($_GET['searchon']);
+	$searchon = ($_GET['searchon']);
 	$category = trim($_GET['category']);
 
-	echo "$category";
-
-	$no_attributes = sizeof($search_in)-1;
-	$title_exists = 0;
-	$isbn_exists = 0;
-	$pstmt = "select isbn as ISBN, title as Title, (select name from AUTHOR where BOOK.author_id = id) as Author, (select name from CATEGORY where BOOK.category_id = id) as Category, (select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, price as Price from BOOK";
-	$attr = 0;
-	$title = FALSE;
-	$isbn = FALSE;
-	$author = FALSE;
-	$publisher = FALSE;
+	//echo "SEARCHON : $searchon";
+	$pstmt = "select isbn as ISBN, title as Title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
+	(select name from CATEGORY where BOOK.category_id = id) as Category, 
+	(select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, price as Price from BOOK";
 	$tables = "";
 	$attr = "";
 	$where = "";
-	if($search_in[0] == 'anywhere'){
+	if(!is_array($searchon))
+	$searchon = explode(',',$searchon);
+	if($searchon[0] == 'anywhere'){
 	$pstmt.= " WHERE BOOK.author_id in (select id from AUTHOR where name like '%$searchfor%') 
 	OR BOOK.publisher_id in (select id from PUBLISHER where name like '%$searchfor%') 
 	OR BOOK.title LIKE '%$searchfor%'";
 	}
 	else {
-		foreach($search_in as $s){
+		foreach($searchon as $s){
 		if($s == "title")
 			$where .= "BOOK.title LIKE '%$searchfor%' ";
 		if($s == "isbn")
@@ -38,33 +58,60 @@ if(isset($_GET['search'])){
 			$where .= "BOOK.author_id in (select id from AUTHOR where name like '%$searchfor%') ";
 		if($s == "publisher")
 			$where .= "BOOK.publisher_id in (select id from PUBLISHER where name like '%$searchfor%') ";
-		if($s != $search_in[sizeof($search_in)-1])
+		if($s != $searchon[sizeof($searchon)-1])
 			$where.="OR ";
-
-
 	}
 	$pstmt.=" WHERE ".$where;
 	}
 	if($category != "all")
 	$pstmt.=" OR BOOK.category_id ".'='." $category";
 
-	echo "$pstmt";
-
 	$stmt = $pdo->prepare("$pstmt");
 	$stmt -> execute();
 
 	$result = $stmt->fetchall(PDO::FETCH_ASSOC);
 
+	//echo "$searchfor";
+
+	if(isset($_SESSION['valid'])){
+		$uid = $_SESSION['user_id'];
+		echo "uid : $uid";
+		$stmt = $pdo -> prepare("SELECT isbn FROM CART_ITEM, SHOPPING_CART WHERE SHOPPING_CART.user_id = $uid AND CART_ITEM.cart_id = SHOPPING_CART.id");
+		$stmt -> execute();
+		$cart_contents = $stmt->fetchAll(PDO::FETCH_COLUMN);
+		echo "cart contents: ";
+		print_r($cart_contents);
+	}
+		else
+		$uid = 'temp';
+
+		$searchlist = '';
+		foreach($searchon as $s)
+		$searchlist.= $s.',';
+		$searchlist = substr($searchlist, 0, -1);
+		echo "searchlist: $searchlist ok";
 }
 
 
-function display_books($result){
+function display_books($result, $cart_contents, $searchfor, $searchlist, $category){
+
+	//echo "$searchfor";
 
 foreach ($result as $row){
-	echo '<tr><td align='.'left'.'><button name='.'btnCart'. 'id='.'btnCart' .'onClick='.'cart("'.$row['ISBN'].'", "", '."Array".', "all")'.'>Add to Cart</button></td><td rowspan='.'2' .'align='.'left'.'>'.$row['Title'].'</br>
-		By '. $row['Author'].':</b> McGraw-Hill,</br><b>ISBN:</b> '.$row['ISBN'].'</t> <b>Price:</b> '.$row['Price'].'</td></tr><tr>
-		<td align='.'left'.'><button name='.'review'.' id='.'review'.' onClick='.'review("'.$row['ISBN'].'", "'.$row['Title'].'")'.'>Reviews</button></td></tr><tr>
-		<td colspan='.'2'.'><p>_______________________________________________</p></td></tr>';
+
+	$book_details = '<tr><td align = \'left\'><button name= \'btnCart\' id= \'btnCart\' onClick= \'cart( '.'"'.$row['ISBN'].'"'.', '.'"'.$searchfor.'"'.', '.'"'.$searchlist.'"'.', '.'"'.$category.'", '.'"'.$row['Price'].'"'.')\' ';
+	
+	if($cart_contents != 1){
+	if(in_array(trim($row['ISBN']), $cart_contents))
+	$book_details .= ' disabled';
+	}
+
+	$book_details .= '> Add to Cart</button></td><td rowspan= \'2\'  align= \'left\'> '.str_replace("'", "\'", $row['Title']).' </br>
+		By '.$row['Author'].':</b> McGraw-Hill,</br><b>ISBN:</b> '.$row['ISBN'].'</t> <b>Price:</b> '.$row['Price'].'</td></tr><tr>
+		<td align= \'left\'><button name= \'review\' id= \'review\' onClick= \'review("'.$row['ISBN'].'", "'.$row['Title'].'")\''.'>Reviews</button></td></tr><tr>
+		<td colspan= \'2\'><p>_______________________________________________</p></td></tr>';
+
+	echo $book_details;
 }
 }
 function display_error($searchfor){
@@ -80,11 +127,8 @@ function display_error($searchfor){
 		window.location.href="screen4.php?isbn="+ isbn + "&title=" + title;
 	}
 	//add to cart
-	function cart(isbn, searchfor, searchon, category){
-		window.location.href="screen3.php?cartisbn="+ isbn + "&searchfor=" + searchfor + "&searchon=" + searchon + "&category=" + category;
-	}
-	function add_to_cart(isbn){
-		
+	function cart(isbn, searchfor, searchon, category, price){
+		window.location.href="screen3.php?cartisbn="+ isbn + "&searchfor=" + searchfor + "&searchon=" + searchon + "&category=" + category + "&price=" + price;
 	}
 
 	</script>
@@ -112,7 +156,7 @@ function display_error($searchfor){
 			<table>
 			<?php
 			if(count($result) > 0)
-			display_books($result);
+			display_books($result, $cart_contents, $searchfor, $searchlist, $category);
 			else
 			display_error($searchfor);
 			?>

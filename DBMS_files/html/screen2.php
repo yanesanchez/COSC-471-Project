@@ -1,5 +1,11 @@
 
 <!-- Figure 2: Search Screen by Alexander -->
+
+<?php
+	ob_start();
+	session_start();
+	?>
+
 <html>
 <head>
 	<title>SEARCH - 3-B.com</title>
