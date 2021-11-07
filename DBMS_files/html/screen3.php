@@ -5,12 +5,21 @@
 require_once('../PDO_connect.php');
 ob_start();
 session_start();
-echo "session : ".$_SESSION['valid']."search : ".$_GET['search'];
+//echo "session : ".$_SESSION['valid']."search : ".$_GET['search'];
 if(isset($_GET['searchfor'])){	
 
-	$uid = $_SESSION['user_id'];
-
-	if(!empty($_GET['cartisbn'])){
+	if(isset($_SESSION['valid'])){
+		$uid = $_SESSION['user_id'];
+		//echo "uid : $uid";
+		$stmt = $pdo -> prepare("SELECT isbn FROM CART_ITEM, SHOPPING_CART WHERE SHOPPING_CART.user_id = $uid AND CART_ITEM.cart_id = SHOPPING_CART.id");
+		$stmt -> execute();
+		$cart_contents = $stmt->fetchAll(PDO::FETCH_COLUMN);
+		echo "cart contents: ";
+		print_r($cart_contents);
+	}
+		else
+		$uid = 'temp';
+	if(!empty($_GET['cartisbn']) && !in_array(trim($_GET['cartisbn']), $cart_contents)){
 		echo "cartisbn : ".$_GET['cartisbn'];
 		$price = $_GET['price'];
 		$isbn = $_GET['cartisbn'];
@@ -26,7 +35,7 @@ if(isset($_GET['searchfor'])){
 		$stmt->execute();
 		unset($_GET['cartisbn']);
 	}
-
+	}
 	echo $_SESSION['username'];
 	echo $_SESSION['user_id'];
 
@@ -37,7 +46,7 @@ if(isset($_GET['searchfor'])){
 	//echo "SEARCHON : $searchon";
 	$pstmt = "select isbn as ISBN, title as Title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
 	(select name from CATEGORY where BOOK.category_id = id) as Category, 
-	(select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, price as Price from BOOK";
+	(select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, price as Price, quantity from BOOK";
 	$tables = "";
 	$attr = "";
 	$where = "";
@@ -73,24 +82,14 @@ if(isset($_GET['searchfor'])){
 
 	//echo "$searchfor";
 
-	if(isset($_SESSION['valid'])){
-		$uid = $_SESSION['user_id'];
-		echo "uid : $uid";
-		$stmt = $pdo -> prepare("SELECT isbn FROM CART_ITEM, SHOPPING_CART WHERE SHOPPING_CART.user_id = $uid AND CART_ITEM.cart_id = SHOPPING_CART.id");
-		$stmt -> execute();
-		$cart_contents = $stmt->fetchAll(PDO::FETCH_COLUMN);
-		echo "cart contents: ";
-		print_r($cart_contents);
-	}
-		else
-		$uid = 'temp';
+
+
 
 		$searchlist = '';
 		foreach($searchon as $s)
 		$searchlist.= $s.',';
 		$searchlist = substr($searchlist, 0, -1);
 		echo "searchlist: $searchlist ok";
-}
 
 
 function display_books($result, $cart_contents, $searchfor, $searchlist, $category){
@@ -102,8 +101,9 @@ foreach ($result as $row){
 	$book_details = '<tr><td align = \'left\'><button name= \'btnCart\' id= \'btnCart\' onClick= \'cart( '.'"'.$row['ISBN'].'"'.', '.'"'.$searchfor.'"'.', '.'"'.$searchlist.'"'.', '.'"'.$category.'", '.'"'.$row['Price'].'"'.')\' ';
 	
 	if($cart_contents != 1){
-	if(in_array(trim($row['ISBN']), $cart_contents))
+	if(in_array(trim($row['ISBN']), $cart_contents) || $row['quantity'] < 1){
 	$book_details .= ' disabled';
+	}
 	}
 
 	$book_details .= '> Add to Cart</button></td><td rowspan= \'2\'  align= \'left\'> '.str_replace("'", "\'", $row['Title']).' </br>

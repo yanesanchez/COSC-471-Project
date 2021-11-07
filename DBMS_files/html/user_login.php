@@ -24,6 +24,10 @@ if(isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['user
 	$row = $stmt->fetch();
 	$uid = $row['id'];
 
+	$getCart = $pdo -> prepare("SELECT id from SHOPPING_CART WHERE SHOPPING_CART.user_id = $uid");
+	$getCart -> execute();
+	$cart_id = $getCart ->fetch();
+	$_SESSION['cart_id'] = $cart_id['id'];
 	$_SESSION['valid'] = true;
 	$_SESSION['username'] = $username;
 	$_SESSION['user_id'] = $uid;

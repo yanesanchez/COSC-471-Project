@@ -1,4 +1,36 @@
+<?php
+ob_start();
+session_start();
 
+require_once('../PDO_connect.php');
+if(isset($_GET['delIsbn'])){
+//	print_r ($_SESSION['cart_id']);
+echo $_GET['delIsbn'];
+	$del_isbn = $_GET['delIsbn'];
+	//echo $del_isbn;
+	$delStmt = $pdo -> prepare('delete from CART_ITEM where isbn = '.'"'.$del_isbn.'"'." and cart_id = ".$_SESSION['cart_id']);
+	$delStmt -> execute();
+	unset($_GET['delIsbn']);
+}
+$stmt = $pdo -> prepare("select BOOK.isbn as ISBN, title as Title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
+(select name from CATEGORY where BOOK.category_id = id) as Category, 
+(select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, BOOK.price as Price, CART_ITEM.quantity from BOOK, SHOPPING_CART, CART_ITEM 
+WHERE CART_ITEM.isbn = BOOK.isbn AND CART_ITEM.cart_id = SHOPPING_CART.id AND user_id = ".$_SESSION['user_id']);
+$stmt -> execute();
+$result = $stmt->fetchall(PDO::FETCH_ASSOC);
+
+$total_stmt = $pdo -> prepare("SELECT sum(price * quantity) from CART_ITEM, SHOPPING_CART WHERE cart_id = SHOPPING_CART.id AND user_id = ".$_SESSION['user_id']);
+$total_stmt -> execute();
+$subtotal = $total_stmt->fetch(PDO::FETCH_COLUMN);
+
+function display($result){
+		//	echo $row['Title'].": ".$row['ISBN'];
+	foreach ($result as $row){
+	echo '<tr><td><button name=\'delete\' id=\'delete\' onClick=\'del('.'"'.$row['ISBN'].'"'.');return false;\'>Delete Item</button></td><td>'.$row['Title'].'</br>
+	<b>By</b>'.$row['Author'].'</br><b>Publisher:</b> '.$row['Publisher'].'</td><td><input id=\'qty'.$row['ISBN'].' name=\'qty'.$row['ISBN'].'\' value=\'1\' size=\'1\' /></td><td>'.$row['Price'].'</td></tr>';
+	}
+}
+?>
 <!DOCTYPE HTML>
 <head>
 	<title>Shopping Cart</title>
@@ -7,6 +39,7 @@
 	function del(isbn){
 		window.location.href="shopping_cart.php?delIsbn="+ isbn;
 	}
+	function recalculate(){}
 	</script>
 </head>
 <body>
@@ -34,7 +67,8 @@
 				<div id="bookdetails" style="overflow:scroll;height:180px;width:400px;border:1px solid black;">
 					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">
 						<th width='10%'>Remove</th><th width='60%'>Book Description</th><th width='10%'>Qty</th><th width='10%'>Price</th>
-						<tr><td><button name='delete' id='delete' onClick='del("123441");return false;'>Delete Item</button></td><td>iuhdf</br><b>By</b> Avi Silberschatz</br><b>Publisher:</b> McGraw-Hill</td><td><input id='txt123441' name='txt123441' value='1' size='1' /></td><td>12.99</td></tr>					</table>
+						<?php display($result) ?>
+					<!--	<tr><td><button name='delete' id='delete' onClick='del("123441");return false;'>Delete Item</button></td><td>iuhdf</br><b>By</b> Avi Silberschatz</br><b>Publisher:</b> McGraw-Hill</td><td><input id='txt123441' name='txt123441' value='1' size='1' /></td><td>12.99</td></tr> -->					</table>
 				</div>
 			</td>
 		</tr>
@@ -47,7 +81,7 @@
 				&nbsp;
 			</td>
 			<td align="center">			
-				Subtotal:  $12.99			</td>
+				<?php echo "Subtotal : ".$subtotal?> </td>
 		</tr>
 	</table>
 </body>

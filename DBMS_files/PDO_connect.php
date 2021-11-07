@@ -6,7 +6,7 @@ ini_set('display_errors', 'On');
 $user = 'root';
 $password = '123';
 $host = 'localhost';
-$name = 'bookstore';
+$name = 'BOOKSTORE';
 
 
 $pdo = new PDO("mysql:host=$host;dbname=$name", "$user", "$password")
