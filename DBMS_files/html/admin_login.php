@@ -1,4 +1,46 @@
 
+<?php
+ob_start();
+session_start();
+
+error_reporting(-1);
+ini_set('display_errors', 'On');
+
+if(isset($_POST['adminname']) && !empty($_POST['adminname']) && !empty($_POST['pin'])){
+	require_once('../PDO_connect.php');
+
+	$username = trim($_POST['adminname']);
+	$pin = trim($_POST['pin']);
+	$stmt = $pdo -> prepare("SELECT * FROM ADMIN WHERE username = :username AND pin = :pin");
+	$stmt -> bindParam(':username', $username);
+	$stmt -> bindParam(':pin', $pin);
+
+	$stmt -> execute();
+
+	$count = $stmt->rowCount();
+
+	if ($count == 1){
+
+	//$row = $stmt->fetch();
+	//$uid = $row['id'];
+
+	//$getCart = $pdo -> prepare("SELECT id from SHOPPING_CART WHERE SHOPPING_CART.user_id = $uid");
+	//$getCart -> execute();
+	//$cart_id = $getCart ->fetch();
+	//$_SESSION['cart_id'] = $cart_id['id'];
+	$_SESSION['valid'] = true;
+	$_SESSION['username'] = $username;
+	$_SESSION['user_id'] = $uid;
+
+	header("location: admin_tasks.php");
+    exit;
+	}
+	else
+	echo "<script>console.log('login unsuccessful');</script>";
+}
+
+?>
+
 <!DOCTYPE HTML>
 <head>
 <title>Admin Login</title>
