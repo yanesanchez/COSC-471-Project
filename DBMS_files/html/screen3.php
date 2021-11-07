@@ -14,13 +14,13 @@ if(isset($_GET['searchfor'])){
 		$stmt = $pdo -> prepare("SELECT isbn FROM CART_ITEM, SHOPPING_CART WHERE SHOPPING_CART.user_id = $uid AND CART_ITEM.cart_id = SHOPPING_CART.id");
 		$stmt -> execute();
 		$cart_contents = $stmt->fetchAll(PDO::FETCH_COLUMN);
-		echo "cart contents: ";
-		print_r($cart_contents);
+		//echo "cart contents: ";
+		//print_r($cart_contents);
 	}
 		else
 		$uid = 'temp';
 	if(!empty($_GET['cartisbn']) && !in_array(trim($_GET['cartisbn']), $cart_contents)){
-		echo "cartisbn : ".$_GET['cartisbn'];
+	//	echo "cartisbn : ".$_GET['cartisbn'];
 		$price = $_GET['price'];
 		$isbn = $_GET['cartisbn'];
 		$stmt = $pdo -> prepare("SELECT id from SHOPPING_CART WHERE SHOPPING_CART.user_id = $uid");
@@ -28,16 +28,15 @@ if(isset($_GET['searchfor'])){
 		$result = $stmt -> fetch();
 		$cart_id = $result['id'];
 		$stmt = $pdo -> prepare("INSERT INTO CART_ITEM (cart_id, isbn, price) VALUES (:cart_id, :isbn, :price)");
-		echo "cart_id : $cart_id";
+	//	echo "cart_id : $cart_id";
 		$stmt -> bindParam(':cart_id', $cart_id);
 		$stmt -> bindParam(':isbn', $isbn);
 		$stmt -> bindParam(':price', $price);
 		$stmt->execute();
-		unset($_GET['cartisbn']);
 	}
 	}
-	echo $_SESSION['username'];
-	echo $_SESSION['user_id'];
+//	echo $_SESSION['username'];
+//	echo $_SESSION['user_id'];
 
 	$searchfor = trim($_GET['searchfor']);
 	$searchon = ($_GET['searchon']);
@@ -80,6 +79,10 @@ if(isset($_GET['searchfor'])){
 
 	$result = $stmt->fetchall(PDO::FETCH_ASSOC);
 
+	$cart_items = $pdo -> prepare("SELECT count(isbn) from CART_ITEM where cart_id = ".$_SESSION['cart_id']);
+	$cart_items -> execute();
+	$cart_items = $cart_items -> fetch(PDO::FETCH_COLUMN);
+
 	//echo "$searchfor";
 
 
@@ -89,7 +92,7 @@ if(isset($_GET['searchfor'])){
 		foreach($searchon as $s)
 		$searchlist.= $s.',';
 		$searchlist = substr($searchlist, 0, -1);
-		echo "searchlist: $searchlist ok";
+	//	echo "searchlist: $searchlist";
 
 
 function display_books($result, $cart_contents, $searchfor, $searchlist, $category){
@@ -138,7 +141,7 @@ function display_error($searchfor){
 		<tr>
 			<td align="left">
 				
-					<h6> <fieldset>Your Shopping Cart has 0 items</fieldset> </h6>
+					<h6> <fieldset>Your Shopping Cart has <?php echo $cart_items.' item'; if($cart_items > 1) echo 's'; ?></fieldset> </h6>
 				
 			</td>
 			<td>

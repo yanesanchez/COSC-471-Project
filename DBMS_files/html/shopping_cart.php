@@ -3,18 +3,30 @@ ob_start();
 session_start();
 
 require_once('../PDO_connect.php');
+//print_r($_POST);
+if(isset ($_POST['recalculate_payment'])){
+	$qty = $_POST['qty'];
+	$stmt1 = $pdo -> prepare("SELECT isbn from CART_ITEM, SHOPPING_CART WHERE cart_id = ".$_SESSION['cart_id']);
+	$stmt1 -> execute();
+	$result = $stmt1 -> fetchall(PDO::FETCH_ASSOC);
+//	echo "result: ".print_r($result);
+
+	foreach ($result as $row){
+
+	$stmt2 = $pdo -> prepare("UPDATE CART_ITEM SET quantity = ".$qty[$row['isbn']]." where cart_id = ".$_SESSION['cart_id']);
+	$stmt2 -> execute();
+	}
+
+}
+
 if(isset($_GET['delIsbn'])){
-//	print_r ($_SESSION['cart_id']);
-echo $_GET['delIsbn'];
 	$del_isbn = $_GET['delIsbn'];
-	//echo $del_isbn;
 	$delStmt = $pdo -> prepare('delete from CART_ITEM where isbn = '.'"'.$del_isbn.'"'." and cart_id = ".$_SESSION['cart_id']);
 	$delStmt -> execute();
-	unset($_GET['delIsbn']);
 }
 $stmt = $pdo -> prepare("select BOOK.isbn as ISBN, title as Title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
 (select name from CATEGORY where BOOK.category_id = id) as Category, 
-(select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, BOOK.price as Price, CART_ITEM.quantity from BOOK, SHOPPING_CART, CART_ITEM 
+(select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, BOOK.price as Price, CART_ITEM.quantity as qty from BOOK, SHOPPING_CART, CART_ITEM 
 WHERE CART_ITEM.isbn = BOOK.isbn AND CART_ITEM.cart_id = SHOPPING_CART.id AND user_id = ".$_SESSION['user_id']);
 $stmt -> execute();
 $result = $stmt->fetchall(PDO::FETCH_ASSOC);
@@ -27,7 +39,7 @@ function display($result){
 		//	echo $row['Title'].": ".$row['ISBN'];
 	foreach ($result as $row){
 	echo '<tr><td><button name=\'delete\' id=\'delete\' onClick=\'del('.'"'.$row['ISBN'].'"'.');return false;\'>Delete Item</button></td><td>'.$row['Title'].'</br>
-	<b>By</b>'.$row['Author'].'</br><b>Publisher:</b> '.$row['Publisher'].'</td><td><input id=\'qty'.$row['ISBN'].' name=\'qty'.$row['ISBN'].'\' value=\'1\' size=\'1\' /></td><td>'.$row['Price'].'</td></tr>';
+	<b>By</b>'.$row['Author'].'</br><b>Publisher:</b> '.$row['Publisher'].'</td><td><input id= \'qty['.$row['ISBN'].']\' name=\'qty['.$row['ISBN'].']\' value=\''.$row['qty'].'\' size=\'1\' /></td><td>'.$row['Price'].'</td></tr>';
 	}
 }
 ?>
