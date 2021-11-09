@@ -1,3 +1,58 @@
+<?php
+require_once('../PDO_connect.php');
+ob_start();
+session_start();
+
+error_reporting(-1);
+ini_set('display_errors', 'On');
+//print_r($_SESSION);
+$stmt = $pdo -> prepare("select * from REGISTERED_USER where id = ".trim($_SESSION['user_id']));
+$stmt -> execute();
+$user_info = $stmt -> fetch(PDO::FETCH_ASSOC);
+//echo "user : ";
+//print_r($user_info);
+$stmt = $pdo -> prepare("select title, CART_ITEM.isbn as isbn, CART_ITEM.price as p, (select name from AUTHOR where BOOK.author_id = id) as Author, 
+(select name from CATEGORY where BOOK.category_id = id) as Category, 
+(select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, sum(CART_ITEM.price * CART_ITEM.quantity) as Price, CART_ITEM.quantity as qty from BOOK, CART_ITEM
+where CART_ITEM.cart_id = ".$_SESSION['cart_id']." and BOOK.isbn = CART_ITEM.isbn
+group by title, Author, isbn, p, Category, Publisher, CART_ITEM.quantity");
+$stmt -> execute();
+$cart = $stmt -> fetchAll(PDO::FETCH_ASSOC);
+//print_r($cart);
+$subtotal = 0;
+$shipping = 2;
+foreach($cart as $s)
+$subtotal += $s['Price'];
+//print_r($cart);
+$date = date('Y-m-d');
+$time = date('H:i:s');
+$insert_date = date('Y-m-d H:i:s');
+
+
+$stmt = $pdo -> prepare("insert into ORDER_PLACED (user_id, total, date, card_number, credit_card, expiration) 
+						VALUES ('".trim($_SESSION['user_id'])."', ".$subtotal.", '".$insert_date."', ".$user_info['card_number']
+						.", '".$user_info['credit_card']."', '12/21')");
+$stmt -> execute();
+$stmt = $pdo -> prepare("SELECT LAST_INSERT_ID()");
+$stmt -> execute();
+$order_id = $stmt -> fetchALL(PDO::FETCH_COLUMN);
+$order_id = $order_id[0];
+//print_r($order_id);
+foreach($cart as $c){
+
+	$stmt = $pdo -> prepare('insert into ORDER_ITEM (order_id , isbn, cost, quantity)
+							values ('.$order_id.', \''.$c['isbn'].'\', '.$c['p'].', '.$c['qty'].')');
+							$stmt -> execute();
+}
+
+function display_order($cart){
+	require_once('../PDO_connect.php');
+
+	foreach($cart as $c){
+		echo '<tr><td>'.$c['title'].'</br><b>By</b> '.$c['Author'].'</br><b>Publisher:</b> '.$c['Publisher'].'</td><td>'.$c['qty'].'</td><td>$'.$c['Price'].'</td></tr>';
+	}
+}
+?>
 
 <!DOCTYPE HTML>
 <head>
@@ -13,29 +68,30 @@
 	</td>
 	</tr>
 	<td colspan="2">
-		test test	</td>
+	<?php echo $user_info['first_name'].' '.$user_info['id']; ?>	</td>
 	<td rowspan="3" colspan="2">
-		<b>UserID:</b>test<br />
-		<b>Date:</b>2019-10-03<br />
-		<b>Time:</b>16:34:46<br />
-		<b>Card Info:</b>MASTER<br />12/2015 - 1234567812345678	</td>
+		<b>UserID:</b><?php echo $user_info['username'];?><br />
+		<b>Date:</b><?php echo $date?><br />
+		<b>Time:</b><?php echo $time?><br />
+		<b>Card Info:</b><?php echo $user_info['credit_card'].'<br />'.$user_info['expiration'].' - '.$user_info['card_number']	?></td>
 	<tr>
 	<td colspan="2">
-		test	</td>		
+	<?php echo $user_info['address']; ?>	</td>		
 	</tr>
 	<tr>
 	<td colspan="2">
-		test	</td>
+	<?php echo $user_info['city']; ?>	</td>
 	</tr>
 	<tr>
 	<td colspan="2">
-		Tennessee, 12345	</td>
+	<?php echo $user_info['state'].', '. $user_info['zip']; ?>	</td>
 	</tr>
 	<tr>
 	<td colspan="3" align="center">
 	<div id="bookdetails" style="overflow:scroll;height:180px;width:520px;border:1px solid black;">
 	<table border='1'>
 		<th>Book Description</th><th>Qty</th><th>Price</th>
+		<?php display_order($cart); ?>
 			</table>
 	</div>
 	</td>
@@ -48,7 +104,7 @@
 	</td>
 	<td align="right">
 	<div id="bookdetails" style="overflow:scroll;height:180px;width:260px;border:1px solid black;">
-		SubTotal:$0</br>Shipping_Handling:$0</br>_______</br>Total:$0	</div>
+	<?php echo "SubTotal: $".$subtotal; ?> </br>Shipping_Handling: $<?php echo $shipping;?></br>_______</br>Total: $<?php echo $subtotal + $shipping;?>	</div>
 	</td>
 	</tr>
 	<tr>

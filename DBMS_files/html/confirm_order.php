@@ -1,8 +1,38 @@
+<?php
+require_once('../PDO_connect.php');
+ob_start();
+session_start();
 
+error_reporting(-1);
+ini_set('display_errors', 'On');
+//print_r($_SESSION);
+$stmt = $pdo -> prepare("select * from REGISTERED_USER where id = ".trim($_SESSION['user_id']));
+$stmt -> execute();
+$user_info = $stmt -> fetch(PDO::FETCH_ASSOC);
+echo "user : ";
+//print_r($user_info);
+$stmt = $pdo -> prepare("select title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
+(select name from CATEGORY where BOOK.category_id = id) as Category, 
+(select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, sum(CART_ITEM.price * CART_ITEM.quantity) as Price, CART_ITEM.quantity as qty from BOOK, CART_ITEM
+where CART_ITEM.cart_id = ".$_SESSION['cart_id']." and BOOK.isbn = CART_ITEM.isbn
+group by title, Author, Category, Publisher, CART_ITEM.quantity");
+$stmt -> execute();
+$cart = $stmt -> fetchAll(PDO::FETCH_ASSOC);
+print_r($cart);
+$subtotal = 0;
+$shipping = 2;
+foreach($cart as $s)
+$subtotal += $s['Price'];
+function display_cart($cart){
+	foreach($cart as $c){
+		echo '<tr><td>'.$c['title'].'</br><b>By</b> '.$c['Author'].'</br><b>Publisher:</b> '.$c['Publisher'].'</td><td>'.$c['qty'].'</td><td>$'.$c['Price'].'</td></tr>';
+	}
+}
+?>
 <!DOCTYPE HTML>
 <head>
 	<title>CONFIRM ORDER</title>
-	<header align="center">Confirm Order</header> 
+	<header align="center">Confirm Order</header>
 </head>
 <body>
 	<table align="center" style="border:2px solid blue;">
@@ -13,9 +43,9 @@
 	</td>
 	</tr>
 	<td colspan="2">
-		test test	</td>
+	<?php echo $user_info['first_name'].' '.$user_info['last_name']; ?>	</td>
 	<td rowspan="3" colspan="2">
-		<input type="radio" name="cardgroup" value="profile_card" checked>Use Credit card on file<br />MASTER - 1234567812345678 - 12/2015<br />
+		<input type="radio" name="cardgroup" value="profile_card" checked>Use Credit card on file<br /><?php echo $user_info['card_number']; ?><br />
 		<input type="radio" name="cardgroup" value="new_card">New Credit Card<br />
 				<select id="credit_card" name="credit_card">
 					<option selected disabled>select a card type</option>
@@ -28,22 +58,22 @@
 	</td>
 	<tr>
 	<td colspan="2">
-		test	</td>		
+	<?php echo $user_info['address']; ?>	</td>		
 	</tr>
 	<tr>
 	<td colspan="2">
-		test	</td>
+	<?php echo $user_info['city']; ?>	</td>
 	</tr>
 	<tr>
 	<td colspan="2">
-		Tennessee, 12345	</td>
+	<?php echo $user_info['state'].', '. $user_info['zip']; ?>	</td>
 	</tr>
 	<tr>
 	<td colspan="3" align="center">
 	<div id="bookdetails" style="overflow:scroll;height:180px;width:520px;border:1px solid black;">
 	<table border='1'>
 		<th>Book Description</th><th>Qty</th><th>Price</th>
-		<tr><td>iuhdf</br><b>By</b> Avi Silberschatz</br><b>Publisher:</b> McGraw-Hill</td><td>1</td><td>$12.99</td></tr>	</table>
+		<?php display_cart($cart); ?>	</table>
 	</div>
 	</td>
 	</tr>
@@ -55,7 +85,7 @@
 	</td>
 	<td align="right">
 	<div id="bookdetails" style="overflow:scroll;height:180px;width:260px;border:1px solid black;">
-		SubTotal:$12.99</br>Shipping_Handling:$2</br>_______</br>Total:$14.99	</div>
+		 <?php echo "SubTotal: $".$subtotal; ?> </br>Shipping_Handling: $<?php echo $shipping;?></br>_______</br>Total: $<?php echo $subtotal + $shipping;?>	</div>
 	</td>
 	</tr>
 	<tr>

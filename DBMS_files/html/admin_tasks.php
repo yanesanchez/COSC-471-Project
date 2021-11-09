@@ -1,4 +1,13 @@
 
+<?php
+ob_start();
+session_start();
+
+error_reporting(-1);
+ini_set('display_errors', 'On');
+
+?>
+
 <!DOCTYPE HTML>
 <head>
 	<title>ADMIN TASKS</title>

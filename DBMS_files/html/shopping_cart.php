@@ -3,17 +3,20 @@ ob_start();
 session_start();
 
 require_once('../PDO_connect.php');
-//print_r($_POST);
 if(isset ($_POST['recalculate_payment'])){
 	$qty = $_POST['qty'];
-	$stmt1 = $pdo -> prepare("SELECT isbn from CART_ITEM, SHOPPING_CART WHERE cart_id = ".$_SESSION['cart_id']);
+	print_r($qty);
+	$stmt1 = $pdo -> prepare("SELECT distinct isbn from CART_ITEM, SHOPPING_CART WHERE cart_id = ".$_SESSION['cart_id']);
 	$stmt1 -> execute();
-	$result = $stmt1 -> fetchall(PDO::FETCH_ASSOC);
+	$result = $stmt1 -> fetchall(PDO::FETCH_COLUMN);
+	echo "**RESULT BEGINS**";
+	print_r($result);
+	echo "**RESULT ENDS**";
 //	echo "result: ".print_r($result);
 
 	foreach ($result as $row){
-
-	$stmt2 = $pdo -> prepare("UPDATE CART_ITEM SET quantity = ".$qty[$row['isbn']]." where cart_id = ".$_SESSION['cart_id']);
+		echo $row;
+	$stmt2 = $pdo -> prepare("UPDATE CART_ITEM SET quantity = ".$qty[$row]." where cart_id = ".$_SESSION['cart_id']." AND isbn = '".$row."'");
 	$stmt2 -> execute();
 	}
 
@@ -23,6 +26,7 @@ if(isset($_GET['delIsbn'])){
 	$del_isbn = $_GET['delIsbn'];
 	$delStmt = $pdo -> prepare('delete from CART_ITEM where isbn = '.'"'.$del_isbn.'"'." and cart_id = ".$_SESSION['cart_id']);
 	$delStmt -> execute();
+	unset($_SESSION['cart_contents'][$del_isbn]);
 }
 $stmt = $pdo -> prepare("select BOOK.isbn as ISBN, title as Title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
 (select name from CATEGORY where BOOK.category_id = id) as Category, 

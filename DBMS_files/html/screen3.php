@@ -5,36 +5,40 @@
 require_once('../PDO_connect.php');
 ob_start();
 session_start();
+print_r($_GET);
+//print_r($_POST);
 //echo "session : ".$_SESSION['valid']."search : ".$_GET['search'];
-if(isset($_GET['searchfor'])){	
+if(isset($_SESSION['valid']))
+echo  $_SESSION['user_id'];
+else
+$uid = 'temp';
+$stmt = $pdo -> prepare("SELECT isbn FROM CART_ITEM, SHOPPING_CART WHERE SHOPPING_CART.user_id = ".$_SESSION['user_id']." AND CART_ITEM.cart_id = SHOPPING_CART.id");
+$stmt -> execute();
+$cart_contents = $stmt->fetchAll(PDO::FETCH_COLUMN);
+if(isset($_GET['cartisbn']) && !in_array($_GET['cartisbn'], $cart_contents)){
+	//$_SESSION['cart_has_items'] = true;
+	echo "cartisbn : ".$_GET['cartisbn'];
+	$price = $_GET['price'];
+	$isbn = $_GET['cartisbn'];
+	$cart_id = $_SESSION['cart_id'];
+	$stmt = $pdo -> prepare("INSERT INTO CART_ITEM (cart_id, isbn, price) VALUES (:cart_id, :isbn, :price)");
+//	echo "cart_id : $cart_id";
+	$stmt -> bindParam(':cart_id', $cart_id);
+	$stmt -> bindParam(':isbn', $isbn);
+	$stmt -> bindParam(':price', $price);
+	$stmt->execute();
+	$stmt = $pdo -> prepare("SELECT isbn FROM CART_ITEM, SHOPPING_CART WHERE SHOPPING_CART.user_id = ".$_SESSION['user_id']." AND CART_ITEM.cart_id = SHOPPING_CART.id");
+$stmt -> execute();
+$cart_contents = $stmt->fetchAll(PDO::FETCH_COLUMN);
+print_r($cart_contents);
+}
 
-	if(isset($_SESSION['valid'])){
-		$uid = $_SESSION['user_id'];
-		//echo "uid : $uid";
-		$stmt = $pdo -> prepare("SELECT isbn FROM CART_ITEM, SHOPPING_CART WHERE SHOPPING_CART.user_id = $uid AND CART_ITEM.cart_id = SHOPPING_CART.id");
-		$stmt -> execute();
-		$cart_contents = $stmt->fetchAll(PDO::FETCH_COLUMN);
-		//echo "cart contents: ";
-		//print_r($cart_contents);
-	}
-		else
-		$uid = 'temp';
-	if(!empty($_GET['cartisbn']) && !in_array(trim($_GET['cartisbn']), $cart_contents)){
-	//	echo "cartisbn : ".$_GET['cartisbn'];
-		$price = $_GET['price'];
-		$isbn = $_GET['cartisbn'];
-		$stmt = $pdo -> prepare("SELECT id from SHOPPING_CART WHERE SHOPPING_CART.user_id = $uid");
-		$stmt->execute();
-		$result = $stmt -> fetch();
-		$cart_id = $result['id'];
-		$stmt = $pdo -> prepare("INSERT INTO CART_ITEM (cart_id, isbn, price) VALUES (:cart_id, :isbn, :price)");
-	//	echo "cart_id : $cart_id";
-		$stmt -> bindParam(':cart_id', $cart_id);
-		$stmt -> bindParam(':isbn', $isbn);
-		$stmt -> bindParam(':price', $price);
-		$stmt->execute();
-	}
-	}
+//echo "cart contents : ".print_r($cart_contents);
+
+
+
+
+	
 //	echo $_SESSION['username'];
 //	echo $_SESSION['user_id'];
 
@@ -52,11 +56,13 @@ if(isset($_GET['searchfor'])){
 	if(!is_array($searchon))
 	$searchon = explode(',',$searchon);
 	if($searchon[0] == 'anywhere'){
+		echo "anywhere";
 	$pstmt.= " WHERE BOOK.author_id in (select id from AUTHOR where name like '%$searchfor%') 
 	OR BOOK.publisher_id in (select id from PUBLISHER where name like '%$searchfor%') 
 	OR BOOK.title LIKE '%$searchfor%'";
 	}
 	else {
+		echo "not anywhere";
 		foreach($searchon as $s){
 		if($s == "title")
 			$where .= "BOOK.title LIKE '%$searchfor%' ";
@@ -74,10 +80,12 @@ if(isset($_GET['searchfor'])){
 	if($category != "all")
 	$pstmt.=" OR BOOK.category_id ".'='." $category";
 
+
 	$stmt = $pdo->prepare("$pstmt");
 	$stmt -> execute();
 
 	$result = $stmt->fetchall(PDO::FETCH_ASSOC);
+
 
 	$cart_items = $pdo -> prepare("SELECT count(isbn) from CART_ITEM where cart_id = ".$_SESSION['cart_id']);
 	$cart_items -> execute();
@@ -96,18 +104,17 @@ if(isset($_GET['searchfor'])){
 
 
 function display_books($result, $cart_contents, $searchfor, $searchlist, $category){
-
 	//echo "$searchfor";
 
 foreach ($result as $row){
-
 	$book_details = '<tr><td align = \'left\'><button name= \'btnCart\' id= \'btnCart\' onClick= \'cart( '.'"'.$row['ISBN'].'"'.', '.'"'.$searchfor.'"'.', '.'"'.$searchlist.'"'.', '.'"'.$category.'", '.'"'.$row['Price'].'"'.')\' ';
 	
-	if($cart_contents != 1){
-	if(in_array(trim($row['ISBN']), $cart_contents) || $row['quantity'] < 1){
+	if($cart_contents == 1)
+	echo "CART CONTENTS IS 1";
+		if (isset($_GET['cartisbn']) && $_GET['cartisbn'] == $row['ISBN'])
+		$book_details .= ' disabled';
+	else if(in_array(trim($row['ISBN']), $cart_contents) || $row['quantity'] < 1)
 	$book_details .= ' disabled';
-	}
-	}
 
 	$book_details .= '> Add to Cart</button></td><td rowspan= \'2\'  align= \'left\'> '.str_replace("'", "\'", $row['Title']).' </br>
 		By '.$row['Author'].':</b> McGraw-Hill,</br><b>ISBN:</b> '.$row['ISBN'].'</t> <b>Price:</b> '.$row['Price'].'</td></tr><tr>
@@ -158,8 +165,10 @@ function display_error($searchfor){
 			<div id="bookdetails" style="overflow:scroll;height:180px;width:400px;border:1px solid black;background-color:LightBlue">
 			<table>
 			<?php
-			if(count($result) > 0)
+			if(count($result) > 0){
+				echo "going to display";
 			display_books($result, $cart_contents, $searchfor, $searchlist, $category);
+			}
 			else
 			display_error($searchfor);
 			?>
