@@ -8,13 +8,26 @@ session_start();
 print_r($_GET);
 //print_r($_POST);
 //echo "session : ".$_SESSION['valid']."search : ".$_GET['search'];
-if(isset($_SESSION['valid']))
-echo  $_SESSION['user_id'];
-else
-$uid = 'temp';
-$stmt = $pdo -> prepare("SELECT isbn FROM CART_ITEM, SHOPPING_CART WHERE SHOPPING_CART.user_id = ".$_SESSION['user_id']." AND CART_ITEM.cart_id = SHOPPING_CART.id");
-$stmt -> execute();
-$cart_contents = $stmt->fetchAll(PDO::FETCH_COLUMN);
+if(isset($_SESSION['valid'])){
+	$stmt = $pdo -> prepare("SELECT 1d from SHOPPING_CART where user_id = $_SESSION['user_id']");
+	$stmt -> execute();
+	$cart_exists = $stmt -> fetchAll();
+if(count($cart_exists) > 0){
+	$stmt = $pdo -> prepare("SELECT isbn FROM CART_ITEM, SHOPPING_CART WHERE SHOPPING_CART.user_id = ".$_SESSION['user_id']." AND CART_ITEM.cart_id = SHOPPING_CART.id");
+	$stmt -> execute();
+	$cart_contents = $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+else{
+	$stmt = $pdo -> prepare("INSERT INTO SHOPPING_CART (user_id) VALUES (:user_id)" );
+	$stmt ->bindParam(':user_id', $cart_user_id['id']);
+	$stmt ->execute();
+}
+}
+else{
+	$_SESSION['user_id'] = 'temp';
+	$_SESSION['valid'] = true;
+	
+	}
 if(isset($_GET['cartisbn']) && !in_array($_GET['cartisbn'], $cart_contents)){
 	//$_SESSION['cart_has_items'] = true;
 	echo "cartisbn : ".$_GET['cartisbn'];
