@@ -86,7 +86,7 @@ CREATE TABLE ORDER_ITEM(
   isbn varchar(50) not null,
   cost decimal(10,2) not null,
   quantity int not null,
-  primary key(id, isbn),
+  primary key(order_id, isbn),
   foreign key(order_id) references ORDER_PLACED(id),
   foreign key(isbn) references BOOK(isbn)
 );
