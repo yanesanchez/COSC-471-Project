@@ -8,7 +8,6 @@ ini_set('display_errors', 'On');
 
 if(isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['username']) && !empty($_POST['pin'])){
 	require_once('../PDO_connect.php');
-
 	$username = trim($_POST['username']);
 	$pin = trim($_POST['pin']);
 	$stmt = $pdo -> prepare("SELECT * FROM REGISTERED_USER WHERE username = :username AND pin = :pin");

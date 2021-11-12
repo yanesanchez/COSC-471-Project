@@ -4,10 +4,13 @@
 </head>
 <body>
 <?php
+ob_start();
+session_start();
 
 error_reporting(-1);
 ini_set('display_errors', 'On');
 
+print_r($_SESSION);
 if(isset($_POST['register_submit'])){
 
     $data_missing = array();
@@ -95,49 +98,109 @@ if(isset($_POST['register_submit'])){
 
         require_once('../PDO_connect.php');
 
-        $stmt1 = $pdo -> prepare("INSERT INTO USER (type) VALUE (:type)");
-        $type = 'R';
-        $stmt1->bindParam(':type', $type);
-        $stmt1->execute();
+        if(!empty($_SESSION['temp_id'])){                                                       // create dummy registered user for temp user on search screen and populate it with these info
+            $stmt = $pdo -> prepare("UPDATE REGISTERED_USER 
+                                     set username = :username, pin = :pin, first_name = :first_name, last_name = :last_name, 
+                                     address = :address, city = :city, state = :state, zip = :zip, 
+                                     credit_card = :credit_card, card_number = :card_number, expiration =:expiration 
+                                     where id = ".$_SESSION['temp_id']);
+                                     
+		$stmt->bindParam(':username', $username);
+		$stmt->bindParam(':pin', $pin);
+		$stmt->bindParam(':first_name', $firstname);
+		$stmt->bindParam(':last_name', $lastname);
+		$stmt->bindParam(':address', $address);
+		$stmt->bindParam(':city', $city);
+		$stmt->bindParam(':state', $state);
+		$stmt->bindParam(':zip', $zip);
+		$stmt->bindParam(':credit_card', $credit_card);
+		$stmt->bindParam(':card_number', $card_number);
+		$stmt->bindParam(':expiration', $expiration);           
+        $stmt->execute();
 
-		$stmt2 = $pdo -> prepare("INSERT INTO REGISTERED_USER (id, username, pin, first_name, last_name, 
-        address, city, state, zip, credit_card, card_number, expiration) 
-        VALUES (LAST_INSERT_ID(), :username, :pin, :first_name, :last_name, 
-        :address, :city, :state, :zip, :credit_card, :card_number, :expiration)");
+            $stmt2 = $pdo -> prepare("SELECT * from TEMP_CART_ITEM, TEMP_SHOPPING_CART 
+                                      WHERE TEMP_SHOPPING_CART.id = TEMP_CART_ITEM.cart_id 
+                                      and TEMP_SHOPPING_CART.user_id = ".$_SESSION['temp_id']);
 
-		$stmt2->bindParam(':username', $username);
-		$stmt2->bindParam(':pin', $pin);
-		$stmt2->bindParam(':first_name', $firstname);
-		$stmt2->bindParam(':last_name', $lastname);
-		$stmt2->bindParam(':address', $address);
-		$stmt2->bindParam(':city', $city);
-		$stmt2->bindParam(':state', $state);
-		$stmt2->bindParam(':zip', $zip);
-		$stmt2->bindParam(':credit_card', $credit_card);
-		$stmt2->bindParam(':card_number', $card_number);
-		$stmt2->bindParam(':expiration', $expiration);
+            $stmt2 -> execute();
 
-		$stmt2->execute();
+            $temp_cart = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
-        $stmt3 = $pdo -> prepare("SELECT LAST_INSERT_ID() as id");
-        $stmt3 -> execute();
+            print_r($temp_cart);
+            
+            $stmt3 = $pdo -> prepare("INSERT INTO SHOPPING_CART (user_id) VALUES (:user_id)" );
+            $stmt3->bindParam(':user_id', $_SESSION['temp_id']);
+            $stmt3->execute();
 
-        $cart_user_id = $stmt3->fetch();
+            $stmt4 = $pdo -> prepare("select id from SHOPPING_CART where user_id = ".$_SESSION['temp_id']);
+            $stmt4 -> execute();
+            $_SESSION['cart_id'] = $stmt4 -> fetchColumn();
 
-        print_r($cart_user_id);
+            foreach ($temp_cart as $t){
+                $stmt4 = $pdo -> prepare('insert into CART_ITEM (cart_id , isbn, price, quantity)
+                                         values ('.$_SESSION['cart_id'].', \''.$t['isbn'].'\', '.$t['price'].', '.$t['quantity'].')');
+                $stmt4 -> execute();
+            }
 
-        $stmt4 = $pdo -> prepare("INSERT INTO SHOPPING_CART (user_id) VALUES (:user_id)" );
-        $stmt4->bindParam(':user_id', $cart_user_id['id']);
-        $stmt4->execute();
 
+            $stmt = $pdo -> prepare("delete from TEMP_CART_ITEM where user_id = ".$_SESSION['temp_id']);
+            $stmt -> execute();
+
+            $_SESSION['user_id'] = $_SESSION['temp_id'];
+            $_SESSION['temp_id'] = '';
+            $_SESSION['temp'] = false;
+            $_SESSION['valid'] = true;
+        }
+        else {
+            $stmt = $pdo -> prepare("INSERT INTO USER (type) VALUE (:type)");
+            $type = 'R';
+            $stmt->bindParam(':type', $type);
+            $stmt->execute();
+            $stmt = $pdo -> prepare("INSERT INTO REGISTERED_USER (id, username, pin, first_name, last_name, 
+                                     address, city, state, zip, credit_card, card_number, expiration) 
+                                     VALUES (LAST_INSERT_ID(), :username, :pin, :first_name, :last_name, 
+                                    :address, :city, :state, :zip, :credit_card, :card_number, :expiration)");
+
+            $stmt2 = $pdo -> prepare("SELECT LAST_INSERT_ID() as id");
+
+	    	$stmt->bindParam(':username', $username);
+	    	$stmt->bindParam(':pin', $pin);
+	    	$stmt->bindParam(':first_name', $firstname);
+	    	$stmt->bindParam(':last_name', $lastname);
+	    	$stmt->bindParam(':address', $address);
+	    	$stmt->bindParam(':city', $city);
+	    	$stmt->bindParam(':state', $state);
+	    	$stmt->bindParam(':zip', $zip);
+	    	$stmt->bindParam(':credit_card', $credit_card);
+	    	$stmt->bindParam(':card_number', $card_number);
+	    	$stmt->bindParam(':expiration', $expiration);
+
+	    	$stmt->execute();
+
+
+             $stmt2 -> execute();
+
+            $cart_user_id = $stmt2->fetch();
+
+             print_r($cart_user_id);
+
+             $stmt4 = $pdo -> prepare("INSERT INTO SHOPPING_CART (user_id) VALUES (:user_id)");
+             $stmt4->bindParam(':user_id', $cart_user_id['id']);
+             $stmt4->execute();
+
+             $_SESSION['user_id'] = $cart_user_id['id'];
       //  mysqli_stmt_bind_param($stmt, "sisssssssss", $username, $pin, $firstname, 
       //  $lastname, $address, $city, $state, $zip, $credit_card, $card_number, $expiration);
 
       // mysqli_stmt_bind_param($stmt);
+        }
+       // $stmt5 = $pdo -> prepare("INSERT INTO CREDIT_CARD (user_id, credit_card, card_number, expiration) VALUES ( $_SESSION['user_id'], $credit_card, $card_number, $expiration)");
+       // $stmt5->execute();
 
-             $affected_rows = $stmt1->rowCount();
+             $affected_rows = $stmt4->rowCount();
+             echo $affected_rows;
 
-        if($affected_rows == 1){
+        if($affected_rows > 0){
             header("Location: screen2.php"); 
             exit;
             $stmt=null;
@@ -146,7 +209,7 @@ if(isset($_POST['register_submit'])){
         }
 
         else{
-            echo 'Error<br />';
+            header("Location: customer_registration.php");
 
             $stmt=null;
 			$pdo=null;
@@ -158,6 +221,12 @@ if(isset($_POST['register_submit'])){
    //              }
    //	}
 
+    }
+    else{
+        header("Location: customer_registration.php");
+
+        $stmt=null;
+        $pdo=null;
     }
 }
 

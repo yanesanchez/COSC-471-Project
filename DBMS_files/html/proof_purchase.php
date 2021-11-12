@@ -5,7 +5,18 @@ session_start();
 
 error_reporting(-1);
 ini_set('display_errors', 'On');
-//print_r($_SESSION);
+print_r($_SESSION);
+
+if($_POST['cardgroup'] == 'new_card'){
+	$credit_card = $_POST['credit_card'];
+	$card_number = $_POST['card_number'];
+	$card_exp = $_POST['card_expiration'];
+	$stmt = $pdo -> prepare("UPDATE REGISTERED_USER 
+							 SET credit_card = '$credit_card', card_number = $card_number, expiration =  '$card_exp'
+							 WHERE id = ".$_SESSION['user_id']);
+					$stmt -> execute();
+}
+
 $stmt = $pdo -> prepare("select * from REGISTERED_USER where id = ".trim($_SESSION['user_id']));
 $stmt -> execute();
 $user_info = $stmt -> fetch(PDO::FETCH_ASSOC);
@@ -17,7 +28,10 @@ $stmt = $pdo -> prepare("select title, CART_ITEM.isbn as isbn, CART_ITEM.price a
 where CART_ITEM.cart_id = ".$_SESSION['cart_id']." and BOOK.isbn = CART_ITEM.isbn
 group by title, Author, isbn, p, Category, Publisher, CART_ITEM.quantity");
 $stmt -> execute();
+$rowcount = $stmt -> rowCount();
+if($rowcount > 0){
 $cart = $stmt -> fetchAll(PDO::FETCH_ASSOC);
+
 //print_r($cart);
 $subtotal = 0;
 $shipping = 2;
@@ -27,11 +41,20 @@ $subtotal += $s['Price'];
 $date = date('Y-m-d');
 $time = date('H:i:s');
 $insert_date = date('Y-m-d H:i:s');
+if($_POST['cardgroup'] == 'new_card'){
+	$credit_card = $_POST['credit_card'];
+	$card_number = $_POST['card_number'];
+	$card_exp = $_POST['card_expiration'];
+}
+else{
+	$credit_card = $user_info['credit_card'];
+	$card_number = $user_info['card_number'];
+	$card_exp = $user_info['expiration'];
+}
 
 
 $stmt = $pdo -> prepare("insert into ORDER_PLACED (user_id, total, date, card_number, credit_card, expiration) 
-						VALUES ('".trim($_SESSION['user_id'])."', ".$subtotal.", '".$insert_date."', ".$user_info['card_number']
-						.", '".$user_info['credit_card']."', '12/21')");
+						VALUES ('".trim($_SESSION['user_id'])."', $subtotal+$shipping, '$insert_date', $card_number, '$credit_card', '$card_exp')");
 $stmt -> execute();
 $stmt = $pdo -> prepare("SELECT LAST_INSERT_ID()");
 $stmt -> execute();
@@ -45,12 +68,18 @@ foreach($cart as $c){
 							$stmt -> execute();
 }
 
+$stmt = $pdo -> prepare("delete from CART_ITEM where cart_id = ".$_SESSION['cart_id']);
+$stmt -> execute();
+$stmt = $pdo -> prepare("delete from SHOPPING_CART  where user_id = ".$_SESSION['user_id']);
+$stmt -> execute();
+
 function display_order($cart){
 	require_once('../PDO_connect.php');
 
 	foreach($cart as $c){
 		echo '<tr><td>'.$c['title'].'</br><b>By</b> '.$c['Author'].'</br><b>Publisher:</b> '.$c['Publisher'].'</td><td>'.$c['qty'].'</td><td>$'.$c['Price'].'</td></tr>';
 	}
+}
 }
 ?>
 
@@ -73,7 +102,7 @@ function display_order($cart){
 		<b>UserID:</b><?php echo $user_info['username'];?><br />
 		<b>Date:</b><?php echo $date?><br />
 		<b>Time:</b><?php echo $time?><br />
-		<b>Card Info:</b><?php echo $user_info['credit_card'].'<br />'.$user_info['expiration'].' - '.$user_info['card_number']	?></td>
+		<b>Card Info:</b><?php echo $credit_card.'<br />'.$card_exp.' - '.$card_number?></td>
 	<tr>
 	<td colspan="2">
 	<?php echo $user_info['address']; ?>	</td>		

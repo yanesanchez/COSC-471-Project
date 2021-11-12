@@ -6,19 +6,33 @@ session_start();
 error_reporting(-1);
 ini_set('display_errors', 'On');
 //print_r($_SESSION);
+if(!empty($_SESSION['user_id'])){
 $stmt = $pdo -> prepare("select * from REGISTERED_USER where id = ".trim($_SESSION['user_id']));
 $stmt -> execute();
 $user_info = $stmt -> fetch(PDO::FETCH_ASSOC);
-echo "user : ";
+//echo "user : ";
 //print_r($user_info);
-$stmt = $pdo -> prepare("select title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
-(select name from CATEGORY where BOOK.category_id = id) as Category, 
-(select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, sum(CART_ITEM.price * CART_ITEM.quantity) as Price, CART_ITEM.quantity as qty from BOOK, CART_ITEM
-where CART_ITEM.cart_id = ".$_SESSION['cart_id']." and BOOK.isbn = CART_ITEM.isbn
-group by title, Author, Category, Publisher, CART_ITEM.quantity");
+}
+else
+$user_info = array("first_name"=>'register', "last_name"=>'register', "address"=>'register', "city"=>'register', "zip"=>'register', "state"=>'register', "card_number"=>'register');
+
+if(!empty($_SESSION['user_id'])){
+	$stmt = $pdo -> prepare("select title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
+	(select name from CATEGORY where BOOK.category_id = id) as Category, 
+	(select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, sum(CART_ITEM.price * CART_ITEM.quantity) as Price, CART_ITEM.quantity as qty from BOOK, CART_ITEM
+	where CART_ITEM.cart_id = ".$_SESSION['cart_id']." and BOOK.isbn = CART_ITEM.isbn
+	group by title, Author, Category, Publisher, CART_ITEM.quantity");
+}
+else if(!empty($_SESSION['temp_id'])){
+	$stmt = $pdo -> prepare("select title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
+	(select name from CATEGORY where BOOK.category_id = id) as Category, 
+	(select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, sum(TEMP_CART_ITEM.price * TEMP_CART_ITEM.quantity) as Price, TEMP_CART_ITEM.quantity as qty from BOOK, TEMP_CART_ITEM
+	where TEMP_CART_ITEM.cart_id = ".$_SESSION['cart_id']." and BOOK.isbn = TEMP_CART_ITEM.isbn
+	group by title, Author, Category, Publisher, TEMP_CART_ITEM.quantity");
+	}
 $stmt -> execute();
 $cart = $stmt -> fetchAll(PDO::FETCH_ASSOC);
-print_r($cart);
+//print_r($cart);
 $subtotal = 0;
 $shipping = 2;
 foreach($cart as $s)
@@ -90,7 +104,7 @@ function display_cart($cart){
 	</tr>
 	<tr>
 		<td align="right">
-			<input type="submit" id="buyit" name="btnbuyit" value="BUY IT!">
+			<input type= <?php if(!empty($_SESSION['temp_id']))echo "button"; else echo "submit"; ?> id="buyit" name="btnbuyit" value="BUY IT!" <?php if(!empty($_SESSION['temp_id'])) echo 'onClick = "register_alert()"'; ?>>
 		</td>
 		</form>
 		<td align="right">
@@ -105,5 +119,11 @@ function display_cart($cart){
 		</td>
 	</tr>
 	</table>
+	<script>
+        function register_alert() {
+            alert("You must be registered to place an order");
+			window.location.href="screen2.php";
+        }
+    </script>
 </body>
 </HTML>

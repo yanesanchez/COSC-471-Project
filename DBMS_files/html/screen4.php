@@ -4,13 +4,15 @@
 <?php
 require_once('../PDO_connect.php');
 
-$stmt = $pdo->prepare("SELECT review FROM book, review WHERE title = :title AND book.isbn = review.isbn");
+$stmt = $pdo->prepare("SELECT review FROM review, book WHERE isbn ='".$_GET['isbn']."'");
 
-$stmt->bindParam(':title', $_GET['title']);
+
 
 $stmt->execute();
 
 $reviews = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+print_r($reviews);
 
 ?>
 
