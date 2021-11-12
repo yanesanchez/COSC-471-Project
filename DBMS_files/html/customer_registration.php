@@ -137,6 +137,7 @@ if(isset($_POST['register_submit'])){
             $stmt2 -> execute();
 
             $temp_cart = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+			print_r($temp_cart);
 
            // print_r($temp_cart);
             
@@ -147,17 +148,16 @@ if(isset($_POST['register_submit'])){
             $stmt4 = $pdo -> prepare("select id from SHOPPING_CART where user_id = ".$_SESSION['temp_id']);
             $stmt4 -> execute();
             $cart_id = $stmt4 -> fetchColumn();
-		//	echo "CART_ID : ".$cart_id;
-			$_SESSION['cart_id'] = $cart_id;
+			echo "CART_ID : ".$cart_id;
 
             foreach ($temp_cart as $t){
                 $stmt4 = $pdo -> prepare('insert into CART_ITEM (cart_id , isbn, price, quantity)
-                                         values ('.$_SESSION['cart_id'].', \''.$t['isbn'].'\', '.$t['price'].', '.$t['quantity'].')');
+                                         values ('.$cart_id.', \''.$t['isbn'].'\', '.$t['price'].', '.$t['quantity'].')');
                 $stmt4 -> execute();
             }
 
-
-            $stmt = $pdo -> prepare("delete from TEMP_CART_ITEM where cart_id = ".$temp_cart['cart_id']);
+			echo $temp_cart['cart_id'];
+            $stmt = $pdo -> prepare("delete from TEMP_CART_ITEM where cart_id = ".$_SESSION['cart_id']);
             $stmt -> execute();
 			$stmt = $pdo -> prepare("delete from TEMP_SHOPPING_CART where user_id = ".$_SESSION['temp_id']);
             $stmt -> execute();

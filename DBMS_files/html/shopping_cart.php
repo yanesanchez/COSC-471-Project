@@ -1,7 +1,7 @@
 <?php
 ob_start();
 session_start();
-
+print_r($_SESSION);
 require_once('../PDO_connect.php');
 if(isset ($_POST['recalculate_payment'])){
 	if(!empty($_SESSION['user_id'])){
@@ -33,7 +33,7 @@ else if(!empty($_SESSION['temp_id'])){
 		echo "result: ".print_r($result);
 	
 		foreach ($result as $row){
-			echo $row;
+			echo "UPDATE TEMP_CART_ITEM SET quantity = ".$qty[$row]." where cart_id = ".$_SESSION['cart_id']." AND isbn = '".$row."'";
 			$stmt2 = $pdo -> prepare("UPDATE TEMP_CART_ITEM SET quantity = ".$qty[$row]." where cart_id = ".$_SESSION['cart_id']." AND isbn = '".$row."'");
 			$stmt2 -> execute();
 		}
