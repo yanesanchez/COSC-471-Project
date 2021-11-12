@@ -97,7 +97,7 @@ function display_order($cart){
 	</td>
 	</tr>
 	<td colspan="2">
-	<?php echo $user_info['first_name'].' '.$user_info['id']; ?>	</td>
+	<?php echo $user_info['first_name'].' '.$user_info['last_name']; ?>	</td>
 	<td rowspan="3" colspan="2">
 		<b>UserID:</b><?php echo $user_info['username'];?><br />
 		<b>Date:</b><?php echo $date?><br />
