@@ -6,7 +6,10 @@ ini_set('display_errors', 'On');
 $user = 'root';
 $password = '123';
 $host = 'localhost';
-$name = 'BOOKSTORE';
+# Ben's DB
+// $name = 'BOOKSTORE';
+# Yaneli's DB
+$name = 'yanelisa_3b-bookstore';
 
 
 $pdo = new PDO("mysql:host=$host;dbname=$name", "$user", "$password")
