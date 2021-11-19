@@ -5,7 +5,7 @@ session_start();
 
 error_reporting(-1);
 ini_set('display_errors', 'On');
-print_r($_SESSION);
+//print_r($_SESSION);
 
 if($_POST['cardgroup'] == 'new_card'){
 	$credit_card = $_POST['credit_card'];
@@ -22,11 +22,13 @@ $stmt -> execute();
 $user_info = $stmt -> fetch(PDO::FETCH_ASSOC);
 //echo "user : ";
 //print_r($user_info);
-$stmt = $pdo -> prepare("select title, CART_ITEM.isbn as isbn, CART_ITEM.price as p, (select name from AUTHOR where BOOK.author_id = id) as Author, 
+$stmt = $pdo -> prepare("select title, CART_ITEM.isbn as isbn, CART_ITEM.price as p, 
+(select first_name from AUTHOR where BOOK.author_id = id) as Author_fname, 
+(select last_name from AUTHOR where BOOK.author_id = id) as Author_lname,  
 (select name from CATEGORY where BOOK.category_id = id) as Category, 
 (select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, sum(CART_ITEM.price * CART_ITEM.quantity) as Price, CART_ITEM.quantity as qty from BOOK, CART_ITEM
 where CART_ITEM.cart_id = ".$_SESSION['cart_id']." and BOOK.isbn = CART_ITEM.isbn
-group by title, Author, isbn, p, Category, Publisher, CART_ITEM.quantity");
+group by title, Author_fname, Author_lname, isbn, p, Category, Publisher, CART_ITEM.quantity");
 $stmt -> execute();
 $rowcount = $stmt -> rowCount();
 if($rowcount > 0){
@@ -77,7 +79,7 @@ function display_order($cart){
 	require_once('../PDO_connect.php');
 
 	foreach($cart as $c){
-		echo '<tr><td>'.$c['title'].'</br><b>By</b> '.$c['Author'].'</br><b>Publisher:</b> '.$c['Publisher'].'</td><td>'.$c['qty'].'</td><td>$'.$c['Price'].'</td></tr>';
+		echo '<tr><td>'.$c['title'].'</br><b>By</b> '.$c['Author_fname'].' '.$c['Author_lname'].'</br><b>Publisher:</b> '.$c['Publisher'].'</td><td>'.$c['qty'].'</td><td>$'.$c['Price'].'</td></tr>';
 	}
 }
 }

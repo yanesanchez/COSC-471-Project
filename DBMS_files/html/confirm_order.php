@@ -5,18 +5,20 @@ session_start();
 
 error_reporting(-1);
 ini_set('display_errors', 'On');
-print_r($_SESSION);
+//print_r($_SESSION);
 if(!empty($_SESSION['user_id']) && (!empty($_SESSION['temp']) || $_SESSION['temp'] == false || !isset($_SESSION['temp']))){
 $stmt = $pdo -> prepare("select * from USER where id = ".trim($_SESSION['user_id']));
 $stmt -> execute();
 $user_info = $stmt -> fetch(PDO::FETCH_ASSOC);
 //echo "user : ";
 //print_r($user_info);
-$stmt = $pdo -> prepare("select title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
+$stmt = $pdo -> prepare("select title, 	
+(select first_name from AUTHOR where BOOK.author_id = id) as Author_fname, 
+(select last_name from AUTHOR where BOOK.author_id = id) as Author_lname, 
 (select name from CATEGORY where BOOK.category_id = id) as Category, 
 (select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, sum(CART_ITEM.price * CART_ITEM.quantity) as Price, CART_ITEM.quantity as qty from BOOK, CART_ITEM
 where CART_ITEM.cart_id = ".$_SESSION['cart_id']." and BOOK.isbn = CART_ITEM.isbn
-group by title, Author, Category, Publisher, CART_ITEM.quantity");
+group by title, Author_fname, Author_lname, Category, Publisher, CART_ITEM.quantity");
 $stmt -> execute();
 $cart = $stmt -> fetchAll(PDO::FETCH_ASSOC);
 }
@@ -30,7 +32,7 @@ foreach($cart as $s)
 $subtotal += $s['Price'];
 function display_cart($cart){
 	foreach($cart as $c){
-		echo '<tr><td>'.$c['title'].'</br><b>By</b> '.$c['Author'].'</br><b>Publisher:</b> '.$c['Publisher'].'</td><td>'.$c['qty'].'</td><td>$'.$c['Price'].'</td></tr>';
+		echo '<tr><td>'.$c['title'].'</br><b>By</b> '.$c['Author_fname'].' '.$c['Author_lname'].'</br><b>Publisher:</b> '.$c['Publisher'].'</td><td>'.$c['qty'].'</td><td>$'.$c['Price'].'</td></tr>';
 	}
 }
 ?>

@@ -29,7 +29,9 @@ if(isset($_GET['delIsbn'])){
 	}
 }
 if(!empty($_SESSION['user_id'])){
-$stmt = $pdo -> prepare("select BOOK.isbn as ISBN, title as Title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
+$stmt = $pdo -> prepare("select BOOK.isbn as ISBN, title as Title, 
+(select first_name from AUTHOR where BOOK.author_id = id) as Author_fname, 
+(select last_name from AUTHOR where BOOK.author_id = id) as Author_lname,  
 (select name from CATEGORY where BOOK.category_id = id) as Category, 
 (select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, BOOK.price as Price, CART_ITEM.quantity as qty from BOOK, SHOPPING_CART, CART_ITEM 
 WHERE CART_ITEM.isbn = BOOK.isbn AND CART_ITEM.cart_id = SHOPPING_CART.id AND user_id = ".$_SESSION['user_id']);
@@ -50,7 +52,7 @@ function display($result){
 		//	echo $row['Title'].": ".$row['ISBN'];
 	foreach ($result as $row){
 	echo '<tr><td><button name=\'delete\' id=\'delete\' onClick=\'del('.'"'.$row['ISBN'].'"'.');return false;\'>Delete Item</button></td><td>'.$row['Title'].'</br>
-	<b>By</b>'.$row['Author'].'</br><b>Publisher:</b> '.$row['Publisher'].'</td><td><input id= \'qty['.$row['ISBN'].']\' name=\'qty['.$row['ISBN'].']\' value=\''.$row['qty'].'\' size=\'1\' /></td><td>'.$row['Price'].'</td></tr>';
+	<b>By</b>'.$row['Author_fname'].' '.$row['Author_lname'].'</br><b>Publisher:</b> '.$row['Publisher'].'</td><td><input id= \'qty['.$row['ISBN'].']\' name=\'qty['.$row['ISBN'].']\' value=\''.$row['qty'].'\' size=\'1\' /></td><td>'.$row['Price'].'</td></tr>';
 	}
 }
 ?>

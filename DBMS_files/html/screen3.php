@@ -97,7 +97,9 @@ if(isset($_GET['cartisbn'])){
 	$category = trim($_GET['category']);
 
 	//echo "SEARCHON : $searchon";
-	$pstmt = "select isbn as ISBN, title as Title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
+	$pstmt = "select isbn as ISBN, title as Title, 
+	(select first_name from AUTHOR where BOOK.author_id = id) as Author_fname, 
+	(select last_name from AUTHOR where BOOK.author_id = id) as Author_lname, 
 	(select name from CATEGORY where BOOK.category_id = id) as Category, 
 	(select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, price as Price, quantity from BOOK";
 	$tables = "";
@@ -107,7 +109,7 @@ if(isset($_GET['cartisbn'])){
 	$searchon = explode(',',$searchon);
 	if($searchon[0] == 'anywhere'){
 	//	echo "anywhere";
-	$pstmt.= " WHERE BOOK.author_id in (select id from AUTHOR where name like '%$searchfor%') 
+	$pstmt.= " WHERE BOOK.author_id in (select id from AUTHOR where first_name like '%$searchfor%' or last_name like '%$searchfor%') 
 	OR BOOK.publisher_id in (select id from PUBLISHER where name like '%$searchfor%') 
 	OR BOOK.title LIKE '%$searchfor%'";
 	}
@@ -119,7 +121,7 @@ if(isset($_GET['cartisbn'])){
 		if($s == "isbn")
 			$where .= "BOOK.isbn LIKE '%$searchfor%' ";
 		if($s == "author")
-			$where .= "BOOK.author_id in (select id from AUTHOR where name like '%$searchfor%') ";
+			$where .= "BOOK.author_id in (select id from AUTHOR where first_name like '%$searchfor%' or last_name like '%$searchfor%') ";
 		if($s == "publisher")
 			$where .= "BOOK.publisher_id in (select id from PUBLISHER where name like '%$searchfor%') ";
 		if($s != $searchon[sizeof($searchon)-1])
@@ -167,7 +169,7 @@ foreach ($result as $row){
 	$book_details .= ' disabled';
 
 	$book_details .= '> Add to Cart</button></td><td rowspan= \'2\'  align= \'left\'> '.str_replace("'", "\'", $row['Title']).' </br>
-		By '.$row['Author'].':</b> '.$row['Publisher'].',</br><b>ISBN:</b> '.$row['ISBN'].'</t> <b>Price:</b> '.$row['Price'].'</td></tr><tr>
+		By '.$row['Author_fname'].' '.$row['Author_lname'].':</b> '.$row['Publisher'].',</br><b>ISBN:</b> '.$row['ISBN'].'</t> <b>Price:</b> '.$row['Price'].'</td></tr><tr>
 		<td align= \'left\'><button name= \'review\' id= \'review\' onClick= \'review("'.$row['ISBN'].'", "'.$row['Title'].'")\''.'>Reviews</button></td></tr><tr>
 		<td colspan= \'2\'><p>_______________________________________________</p></td></tr>';
 
