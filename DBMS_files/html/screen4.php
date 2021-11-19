@@ -4,7 +4,7 @@
 <?php
 require_once('../PDO_connect.php');
 
-$stmt = $pdo->prepare("SELECT review FROM REVIEW WHERE isbn ='".$_GET['isbn']."'");
+$stmt = $pdo->prepare("SELECT description FROM REVIEW WHERE isbn ='".$_GET['isbn']."'");
 
 
 
