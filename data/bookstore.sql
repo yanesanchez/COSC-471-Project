@@ -90,3 +90,11 @@ CREATE TABLE ORDER_ITEM(
   foreign key(order_id) references ORDER_PLACED(id),
   foreign key(isbn) references BOOK(isbn)
 );
+
+CREATE TABLE REVIEW (
+  id int NOT NULL AUTO_INCREMENT,
+  isbn varchar(50) NOT NULL,
+  description varchar(1000) NOT NULL,
+  PRIMARY KEY (`id`,`isbn`),
+  FOREIGN KEY (`isbn`) REFERENCES BOOK (`isbn`)
+);
