@@ -1,44 +1,24 @@
 <?php
 ob_start();
 session_start();
-print_r($_SESSION);
+//print_r($_SESSION);
 require_once('../PDO_connect.php');
 if(isset ($_POST['recalculate_payment'])){
-	if(!empty($_SESSION['user_id'])){
 	$qty = $_POST['qty'];
-	print_r($qty);
+//	print_r($qty);
 	$stmt1 = $pdo -> prepare("SELECT distinct isbn from CART_ITEM, SHOPPING_CART WHERE cart_id = ".$_SESSION['cart_id']);
 	$stmt1 -> execute();
 	$result = $stmt1 -> fetchall(PDO::FETCH_COLUMN);
-	echo "**RESULT BEGINS**";
+	/*echo "**RESULT BEGINS**";
 	print_r($result);
 	echo "**RESULT ENDS**";
-	echo "result: ".print_r($result);
+	echo "result: ".print_r($result);*/
 
 	foreach ($result as $row){
-		echo $row;
+		//echo $row;
 		$stmt2 = $pdo -> prepare("UPDATE CART_ITEM SET quantity = ".$qty[$row]." where cart_id = ".$_SESSION['cart_id']." AND isbn = '".$row."'");
 		$stmt2 -> execute();
 	}
-	}
-else if(!empty($_SESSION['temp_id'])){
-		$qty = $_POST['qty'];
-		print_r($qty);
-		$stmt1 = $pdo -> prepare("SELECT distinct isbn from TEMP_CART_ITEM, TEMP_SHOPPING_CART WHERE cart_id = ".$_SESSION['cart_id']);
-		$stmt1 -> execute();
-		$result = $stmt1 -> fetchall(PDO::FETCH_COLUMN);
-		echo "**RESULT BEGINS**";
-		print_r($result);
-		echo "**RESULT ENDS**";
-		echo "result: ".print_r($result);
-	
-		foreach ($result as $row){
-			echo "UPDATE TEMP_CART_ITEM SET quantity = ".$qty[$row]." where cart_id = ".$_SESSION['cart_id']." AND isbn = '".$row."'";
-			$stmt2 = $pdo -> prepare("UPDATE TEMP_CART_ITEM SET quantity = ".$qty[$row]." where cart_id = ".$_SESSION['cart_id']." AND isbn = '".$row."'");
-			$stmt2 -> execute();
-		}
-		}
-
 }
 
 if(isset($_GET['delIsbn'])){
@@ -47,11 +27,6 @@ if(isset($_GET['delIsbn'])){
 		$delStmt = $pdo -> prepare('delete from CART_ITEM where isbn = '.'"'.$del_isbn.'"'." and cart_id = ".$_SESSION['cart_id']);
 		$delStmt -> execute();
 	}
-else if(!empty($_SESSION['temp_id'])){
-		$del_isbn = $_GET['delIsbn'];
-		$delStmt = $pdo -> prepare('delete from TEMP_CART_ITEM where isbn = '.'"'.$del_isbn.'"'." and cart_id = ".$_SESSION['cart_id']);
-		$delStmt -> execute();
-		}
 }
 if(!empty($_SESSION['user_id'])){
 $stmt = $pdo -> prepare("select BOOK.isbn as ISBN, title as Title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
@@ -59,12 +34,7 @@ $stmt = $pdo -> prepare("select BOOK.isbn as ISBN, title as Title, (select name 
 (select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, BOOK.price as Price, CART_ITEM.quantity as qty from BOOK, SHOPPING_CART, CART_ITEM 
 WHERE CART_ITEM.isbn = BOOK.isbn AND CART_ITEM.cart_id = SHOPPING_CART.id AND user_id = ".$_SESSION['user_id']);
 }
-else if(!empty($_SESSION['temp_id'])){
-	$stmt = $pdo -> prepare("select BOOK.isbn as ISBN, title as Title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
-	(select name from CATEGORY where BOOK.category_id = id) as Category, 
-	(select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, BOOK.price as Price, TEMP_CART_ITEM.quantity as qty from BOOK, TEMP_SHOPPING_CART, TEMP_CART_ITEM 
-	WHERE TEMP_CART_ITEM.isbn = BOOK.isbn AND TEMP_CART_ITEM.cart_id = TEMP_SHOPPING_CART.id AND user_id = ".$_SESSION['temp_id']);
-	}
+
 $stmt -> execute();
 $result = $stmt->fetchall(PDO::FETCH_ASSOC);
 if(!empty($_SESSION['user_id'])){
@@ -92,7 +62,6 @@ function display($result){
 	function del(isbn){
 		window.location.href="shopping_cart.php?delIsbn="+ isbn;
 	}
-	function recalculate(){}
 	</script>
 </head>
 <body>

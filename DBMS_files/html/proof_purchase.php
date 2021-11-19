@@ -11,13 +11,13 @@ if($_POST['cardgroup'] == 'new_card'){
 	$credit_card = $_POST['credit_card'];
 	$card_number = $_POST['card_number'];
 	$card_exp = $_POST['card_expiration'];
-	$stmt = $pdo -> prepare("UPDATE REGISTERED_USER 
+	$stmt = $pdo -> prepare("UPDATE USER 
 							 SET credit_card = '$credit_card', card_number = $card_number, expiration =  '$card_exp'
 							 WHERE id = ".$_SESSION['user_id']);
 					$stmt -> execute();
 }
 
-$stmt = $pdo -> prepare("select * from REGISTERED_USER where id = ".trim($_SESSION['user_id']));
+$stmt = $pdo -> prepare("select * from USER where id = ".trim($_SESSION['user_id']));
 $stmt -> execute();
 $user_info = $stmt -> fetch(PDO::FETCH_ASSOC);
 //echo "user : ";

@@ -5,8 +5,8 @@
 require_once('../PDO_connect.php');
 	ob_start();
 	session_start();
-	echo session_status();
-	print_r($_SESSION);
+//	echo session_status();
+//	print_r($_SESSION);
 	?>
 
 <html>

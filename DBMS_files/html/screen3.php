@@ -13,87 +13,54 @@ session_start();
 //$_SESSION['user_id'] = '';
 if(isset($_SESSION['valid']) && !empty($_SESSION['valid'])){
 	if(!empty($_SESSION['user_id'])){
-		echo "reg user";
+	//	echo "reg user";
 		$stmt = $pdo -> prepare("SELECT id from SHOPPING_CART where user_id = ".$_SESSION['user_id']);
 		$stmt -> execute();
 		$cart_exists = $stmt -> fetch(PDO::FETCH_COLUMN);
-		print_r($cart_exists);
+	//	print_r($cart_exists);
 
 		if($cart_exists > 0){
-			echo "old cart : ";
+		//	echo "old cart : ";
 			$_SESSION['cart_id'] = $cart_exists;
 			$stmt = $pdo -> prepare("SELECT isbn FROM CART_ITEM, SHOPPING_CART WHERE SHOPPING_CART.user_id = ".$_SESSION['user_id']." AND CART_ITEM.cart_id = SHOPPING_CART.id");
 			$stmt -> execute();
 			$cart_contents = $stmt->fetchAll(PDO::FETCH_COLUMN);
 		}
 		else{
-			echo "new cart";
+		//	echo "new cart";
 			$stmt = $pdo -> prepare("INSERT INTO SHOPPING_CART (user_id) VALUES (:user_id)");
 			$stmt ->bindParam(':user_id', $_SESSION['user_id']);
 			$stmt ->execute();
 			$stmt = $pdo -> prepare("SELECT id from SHOPPING_CART where user_id = ".$_SESSION['user_id']);
 			$stmt -> execute();
 			$_SESSION['cart_id'] = $stmt -> fetch(PDO::FETCH_COLUMN);
-			echo "cart id: ".$_SESSION['cart_id'];
-			$cart_contents = '';
-		}
-	}
-	else if(!empty($_SESSION['temp_id'])){
-		echo "temp user";
-		$stmt = $pdo -> prepare("SELECT id from TEMP_SHOPPING_CART where user_id = ".$_SESSION['temp_id']);
-		$stmt -> execute();
-		$cart_exists = $stmt -> fetch(PDO::FETCH_COLUMN);
-		print_r($cart_exists);
-
-		if($cart_exists > 0){
-			echo "old cart : ";
-			$_SESSION['cart_id'] = $cart_exists;
-			$stmt = $pdo -> prepare("SELECT isbn FROM TEMP_CART_ITEM, TEMP_SHOPPING_CART WHERE TEMP_SHOPPING_CART.user_id = ".$_SESSION['temp_id']." AND TEMP_CART_ITEM.cart_id = TEMP_SHOPPING_CART.id");
-			$stmt -> execute();
-			$cart_contents = $stmt->fetchAll(PDO::FETCH_COLUMN);
-		}
-		else{
-			echo "new cart";
-			$stmt = $pdo -> prepare("INSERT INTO TEMP_SHOPPING_CART (user_id) VALUES (:temp_id)");
-			$stmt ->bindParam(':temp_id', $_SESSION['temp_id']);
-			$stmt ->execute();
-			$stmt = $pdo -> prepare("SELECT id from TEMP_SHOPPING_CART where user_id = ".$_SESSION['temp_id']);
-			$stmt -> execute();
-			$_SESSION['cart_id'] = $stmt -> fetch(PDO::FETCH_COLUMN);
-			echo "cart id: ".$_SESSION['cart_id'];
+		//	echo "cart id: ".$_SESSION['cart_id'];
 			$cart_contents = '';
 		}
 	}
 }
 else{
-	echo "new temp user";
-	$_SESSION['temp'] = true;
-	$stmt = $pdo -> prepare("INSERT INTO USER (type) VALUES ('T')" );
+//	echo "new temp user";
+	$stmt = $pdo -> prepare("INSERT INTO USER (type, username, pin, first_name, last_name, address, city, state, zip, credit_card, card_number, expiration) VALUES ('T', null, null, null, null, null, null, null, null, null, null, null)" );
 	$stmt ->execute();
 	$stmt = $pdo -> prepare("SELECT LAST_INSERT_ID()");
 	$stmt ->execute();
 	$temp_id = $stmt -> fetch(PDO::FETCH_COLUMN);
-	$_SESSION['temp_id'] = $temp_id;
-	echo "temp id: ".$_SESSION['temp_id'];
-	print_r($temp_id);
+	$_SESSION['user_id'] = $temp_id;
 
-	$stmt = $pdo -> prepare("INSERT INTO REGISTERED_USER (id, username, pin, first_name, last_name, 
-	address, city, state, zip, credit_card, card_number, expiration)
-	VALUES ($temp_id, 'temp".$temp_id."', 0000, 'temp', 'temp', 
-	'temp', 'temp', 'temp', 'temp', 'temp', 'temp', 00-00)");
-	$stmt -> execute();
+	//	echo "new cart";
+		$stmt = $pdo -> prepare("INSERT INTO SHOPPING_CART (user_id) VALUES (:user_id)");
+		$stmt ->bindParam(':user_id', $_SESSION['user_id']);
+		$stmt ->execute();
+		$stmt = $pdo -> prepare("SELECT id from SHOPPING_CART where user_id = ".$_SESSION['user_id']);
+		$stmt -> execute();
+		$_SESSION['cart_id'] = $stmt -> fetch(PDO::FETCH_COLUMN);
+	//	echo "cart id: ".$_SESSION['cart_id'];
+		$cart_contents = '';
+		$_SESSION['temp'] = true;
+		$_SESSION['valid'] = true;
+}
 
-
-	$stmt = $pdo -> prepare("INSERT INTO TEMP_SHOPPING_CART (user_id) VALUES (:user_id)" );
-	$stmt ->bindParam(':user_id', $_SESSION['temp_id']);
-	$stmt ->execute();
-
-	$stmt = $pdo -> prepare("SELECT id from TEMP_SHOPPING_CART where user_id = ".$_SESSION['temp_id']);
-	$stmt -> execute();
-	$_SESSION['cart_id'] = $stmt -> fetch(PDO::FETCH_COLUMN);
-	$cart_contents = '';
-	$_SESSION['valid'] = true;
-	}
 
 if(isset($_GET['cartisbn'])){
 	if(!is_array($cart_contents) || !in_array($_GET['cartisbn'], $cart_contents)){
@@ -101,7 +68,6 @@ if(isset($_GET['cartisbn'])){
 		$isbn = $_GET['cartisbn'];
 		$cart_id = $_SESSION['cart_id'];
 
-	if(!empty($_SESSION['user_id'])){
 	//$_SESSION['cart_has_items'] = true;
 	$stmt = $pdo -> prepare("INSERT INTO CART_ITEM (cart_id, isbn, price) VALUES (:cart_id, :isbn, :price)");
 //	echo "cart_id : $cart_id";
@@ -114,21 +80,7 @@ if(isset($_GET['cartisbn'])){
 	$cart_contents = $stmt->fetchAll(PDO::FETCH_COLUMN);
 	//print_r($cart_contents);
 	}
-	else if(!empty($_SESSION['temp_id'])){
-		//$_SESSION['cart_has_items'] = true;
-
-		$stmt = $pdo -> prepare("INSERT INTO TEMP_CART_ITEM (cart_id, isbn, price) VALUES (:cart_id, :isbn, :price)");
-	//	echo "cart_id : $cart_id";
-		$stmt -> bindParam(':cart_id', $cart_id);
-		$stmt -> bindParam(':isbn', $isbn);
-		$stmt -> bindParam(':price', $price);
-		$stmt->execute();
-		$stmt = $pdo -> prepare("SELECT isbn FROM TEMP_CART_ITEM, TEMP_SHOPPING_CART WHERE TEMP_SHOPPING_CART.user_id = ".$_SESSION['temp_id']." AND TEMP_CART_ITEM.cart_id = TEMP_SHOPPING_CART.id");
-		$stmt -> execute();
-		$cart_contents = $stmt->fetchAll(PDO::FETCH_COLUMN);
-	//	print_r($cart_contents);
-		}
-	}
+	
 }
 
 //echo "cart contents : ".print_r($cart_contents);
@@ -154,13 +106,13 @@ if(isset($_GET['cartisbn'])){
 	if(!is_array($searchon))
 	$searchon = explode(',',$searchon);
 	if($searchon[0] == 'anywhere'){
-		echo "anywhere";
+	//	echo "anywhere";
 	$pstmt.= " WHERE BOOK.author_id in (select id from AUTHOR where name like '%$searchfor%') 
 	OR BOOK.publisher_id in (select id from PUBLISHER where name like '%$searchfor%') 
 	OR BOOK.title LIKE '%$searchfor%'";
 	}
 	else {
-		echo "not anywhere";
+	//	echo "not anywhere";
 		foreach($searchon as $s){
 		if($s == "title")
 			$where .= "BOOK.title LIKE '%$searchfor%' ";
@@ -208,7 +160,7 @@ foreach ($result as $row){
 	$book_details = '<tr><td align = \'left\'><button name= \'btnCart\' id= \'btnCart\' onClick= \'cart( '.'"'.$row['ISBN'].'"'.', '.'"'.$searchfor.'"'.', '.'"'.$searchlist.'"'.', '.'"'.$category.'", '.'"'.$row['Price'].'"'.')\' ';
 	
 	if($cart_contents == 1)
-	echo "CART CONTENTS IS 1";
+	//echo "CART CONTENTS IS 1";
 		if (isset($_GET['cartisbn']) && $_GET['cartisbn'] == $row['ISBN'])
 		$book_details .= ' disabled';
 	else if(is_array($cart_contents) && in_array(trim($row['ISBN']), $cart_contents) || $row['quantity'] < 1)

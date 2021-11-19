@@ -5,33 +5,24 @@ session_start();
 
 error_reporting(-1);
 ini_set('display_errors', 'On');
-//print_r($_SESSION);
-if(!empty($_SESSION['user_id'])){
-$stmt = $pdo -> prepare("select * from REGISTERED_USER where id = ".trim($_SESSION['user_id']));
+print_r($_SESSION);
+if(!empty($_SESSION['user_id']) && (!empty($_SESSION['temp']) || $_SESSION['temp'] == false || !isset($_SESSION['temp']))){
+$stmt = $pdo -> prepare("select * from USER where id = ".trim($_SESSION['user_id']));
 $stmt -> execute();
 $user_info = $stmt -> fetch(PDO::FETCH_ASSOC);
 //echo "user : ";
 //print_r($user_info);
+$stmt = $pdo -> prepare("select title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
+(select name from CATEGORY where BOOK.category_id = id) as Category, 
+(select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, sum(CART_ITEM.price * CART_ITEM.quantity) as Price, CART_ITEM.quantity as qty from BOOK, CART_ITEM
+where CART_ITEM.cart_id = ".$_SESSION['cart_id']." and BOOK.isbn = CART_ITEM.isbn
+group by title, Author, Category, Publisher, CART_ITEM.quantity");
+$stmt -> execute();
+$cart = $stmt -> fetchAll(PDO::FETCH_ASSOC);
 }
 else
 $user_info = array("first_name"=>'register', "last_name"=>'register', "address"=>'register', "city"=>'register', "zip"=>'register', "state"=>'register', "card_number"=>'register');
 
-if(!empty($_SESSION['user_id'])){
-	$stmt = $pdo -> prepare("select title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
-	(select name from CATEGORY where BOOK.category_id = id) as Category, 
-	(select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, sum(CART_ITEM.price * CART_ITEM.quantity) as Price, CART_ITEM.quantity as qty from BOOK, CART_ITEM
-	where CART_ITEM.cart_id = ".$_SESSION['cart_id']." and BOOK.isbn = CART_ITEM.isbn
-	group by title, Author, Category, Publisher, CART_ITEM.quantity");
-}
-else if(!empty($_SESSION['temp_id'])){
-	$stmt = $pdo -> prepare("select title, (select name from AUTHOR where BOOK.author_id = id) as Author, 
-	(select name from CATEGORY where BOOK.category_id = id) as Category, 
-	(select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, sum(TEMP_CART_ITEM.price * TEMP_CART_ITEM.quantity) as Price, TEMP_CART_ITEM.quantity as qty from BOOK, TEMP_CART_ITEM
-	where TEMP_CART_ITEM.cart_id = ".$_SESSION['cart_id']." and BOOK.isbn = TEMP_CART_ITEM.isbn
-	group by title, Author, Category, Publisher, TEMP_CART_ITEM.quantity");
-	}
-$stmt -> execute();
-$cart = $stmt -> fetchAll(PDO::FETCH_ASSOC);
 //print_r($cart);
 $subtotal = 0;
 $shipping = 2;
@@ -104,17 +95,17 @@ function display_cart($cart){
 	</tr>
 	<tr>
 		<td align="right">
-			<input type= <?php if(!empty($_SESSION['temp_id']))echo "button"; else echo "submit"; ?> id="buyit" name="btnbuyit" value="BUY IT!" <?php if(!empty($_SESSION['temp_id'])) echo 'onClick = "register_alert()"'; ?>>
+			<input type= <?php if(isset($_SESSION['temp']) && $_SESSION['temp'] == 1)echo "button"; else echo "submit"; ?> id="buyit" name="btnbuyit" value="BUY IT!" <?php if(isset($_SESSION['temp']) && $_SESSION['temp'] == 1) echo 'onClick = "register_alert()"'; ?>>
 		</td>
 		</form>
 		<td align="right">
 			<form id="update" action="update_customerprofile.php" method="post">
-			<input type="submit" id="update_customerprofile" name="update_customerprofile" value="Update Customer Profile">
+			<input type=<?php if(isset($_SESSION['temp']) && $_SESSION['temp'] == 1) echo "button"; else echo "submit"; ?> id="update_customerprofile" name="update_customerprofile" value="Update Customer Profile"<?php if(isset($_SESSION['temp']) && $_SESSION['temp'] == 1) echo 'onClick = "register_alert2()"'; ?>>
 			</form>
 		</td>
 		<td align="left">
 			<form id="cancel" action="index.php" method="post">
-			<input type="submit" id="cancel" name="cancel" value="Cancel">
+			<input type= "submit" id= "cancel" name="cancel" value="Cancel" >
 			</form>
 		</td>
 	</tr>
@@ -122,6 +113,16 @@ function display_cart($cart){
 	<script>
         function register_alert() {
             alert("You must be registered to place an order");
+			window.location.href="screen2.php";
+        }
+		function register_alert2() {
+            alert("You must be registered to update your profile");
+			window.location.href="screen2.php";
+        }
+    </script>
+		<script>
+			function register_alert2() {
+            alert("You must be registered to update your profile");
 			window.location.href="screen2.php";
         }
     </script>

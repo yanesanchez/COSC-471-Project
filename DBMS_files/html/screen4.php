@@ -4,7 +4,7 @@
 <?php
 require_once('../PDO_connect.php');
 
-$stmt = $pdo->prepare("SELECT review FROM review, book WHERE isbn ='".$_GET['isbn']."'");
+$stmt = $pdo->prepare("SELECT review FROM REVIEW WHERE isbn ='".$_GET['isbn']."'");
 
 
 
@@ -12,7 +12,7 @@ $stmt->execute();
 
 $reviews = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-print_r($reviews);
+//print_r($reviews);
 
 ?>
 

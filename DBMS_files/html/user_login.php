@@ -10,7 +10,7 @@ if(isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['user
 	require_once('../PDO_connect.php');
 	$username = trim($_POST['username']);
 	$pin = trim($_POST['pin']);
-	$stmt = $pdo -> prepare("SELECT * FROM REGISTERED_USER WHERE username = :username AND pin = :pin");
+	$stmt = $pdo -> prepare("SELECT * FROM USER WHERE username = :username AND pin = :pin");
 	$stmt -> bindParam(':username', $username);
 	$stmt -> bindParam(':pin', $pin);
 
@@ -88,7 +88,7 @@ ini_set("display_errors", 1);
 			<td align="right">
 				<input type="submit" name="cancel" id="cancel" value="Cancel">
 			</td>
-			<?php if(isset($_POST['username'])) echo "<tr><td></td><td align = \"center\" style = \"color:red\">ENTER A VALID USERNAME AND PASSWORD </td><td></td></tr>" ?>
+			<?php if(isset($_POST['username'])) echo "<tr><td></td><td align = \"center\" colspan = \"2\" style = \"color:red\">ENTER A VALID USERNAME AND PASSWORD </td><td></td></tr>" ?>
 			</form>
 		</tr>
 	</table>
