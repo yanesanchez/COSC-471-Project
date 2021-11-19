@@ -97,7 +97,7 @@ INSERT INTO `USER` (`username`, `type`, `pin`, `first_name`, `last_name`, `stree
 ('admin2', 12345, null, null, null, null, null, null, null, null, null, null),
 ('admin3', 96385, null, null, null, null, null, null, null, null, null, null);
 
-INSERT INTO `AUTHOR` (`id`, `first_name`, `last_name`) VALUES
+INSERT INTO `AUTHOR` (`first_name`, `last_name`) VALUES
 ('James', 'Clear'),
 ('Markus', 'Zusak'),
 ('Thomas', 'Byrom'),
@@ -108,7 +108,7 @@ INSERT INTO `AUTHOR` (`id`, `first_name`, `last_name`) VALUES
 ('Bessel', 'van der Kolk MD'),
 ('Stephen', 'Chbosky');
 
-INSERT INTO `CATEGORY` (`id`, `name`) VALUES
+INSERT INTO `CATEGORY` (`name`) VALUES
 ('Nonfiction'),
 ('Fiction'),
 ('Young Adult'),
