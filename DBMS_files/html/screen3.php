@@ -84,10 +84,6 @@ if(isset($_GET['cartisbn'])){
 }
 
 //echo "cart contents : ".print_r($cart_contents);
-
-
-
-
 	
 //	echo $_SESSION['username'];
 //	echo $_SESSION['user_id'];
@@ -130,8 +126,7 @@ if(isset($_GET['cartisbn'])){
 	$pstmt.=" WHERE ".$where;
 	}
 	if($category != "all")
-	$pstmt.=" OR BOOK.category_id ".'='." $category";
-
+	$pstmt.=" AND BOOK.category_id ".'='." $category";
 	$stmt = $pdo->prepare("$pstmt");
 	$stmt -> execute();
 
@@ -144,9 +139,6 @@ if(isset($_GET['cartisbn'])){
 	$cart_items = $cart_items -> fetch(PDO::FETCH_COLUMN);
 
 	//echo "$searchfor";
-
-
-
 
 		$searchlist = '';
 		foreach($searchon as $s)
