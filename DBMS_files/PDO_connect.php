@@ -3,10 +3,10 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 
-$user = 'root';
-$password = '123';
+$user = 'yanelisa_root';
+$password = 'cosc-471';
 $host = 'localhost';
-$name = 'Bookstore2';
+$name = 'yanelisa_3b-bookstore2';
 
 
 $pdo = new PDO("mysql:host=$host;dbname=$name", "$user", "$password")
