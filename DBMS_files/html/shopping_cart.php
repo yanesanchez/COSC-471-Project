@@ -35,18 +35,14 @@ $stmt = $pdo -> prepare("select BOOK.isbn as ISBN, title as Title,
 (select name from CATEGORY where BOOK.category_id = id) as Category, 
 (select name from PUBLISHER where BOOK.publisher_id = id) as Publisher, BOOK.price as Price, CART_ITEM.quantity as qty from BOOK, SHOPPING_CART, CART_ITEM 
 WHERE CART_ITEM.isbn = BOOK.isbn AND CART_ITEM.cart_id = SHOPPING_CART.id AND user_id = ".$_SESSION['user_id']);
-}
-
 $stmt -> execute();
 $result = $stmt->fetchall(PDO::FETCH_ASSOC);
-if(!empty($_SESSION['user_id'])){
-	$total_stmt = $pdo -> prepare("SELECT sum(price * quantity) from CART_ITEM, SHOPPING_CART WHERE cart_id = SHOPPING_CART.id AND user_id = ".$_SESSION['user_id']);
-}
-else if(!empty($_SESSION['temp_id'])){
-	$total_stmt = $pdo -> prepare("SELECT sum(price * quantity) from TEMP_CART_ITEM, TEMP_SHOPPING_CART WHERE cart_id = TEMP_SHOPPING_CART.id AND user_id = ".$_SESSION['temp_id']);
-	}
+$total_stmt = $pdo -> prepare("SELECT sum(price * quantity) from CART_ITEM, SHOPPING_CART WHERE cart_id = SHOPPING_CART.id AND user_id = ".$_SESSION['user_id']);
 $total_stmt -> execute();
 $subtotal = $total_stmt->fetch(PDO::FETCH_COLUMN);
+}
+else
+$subtotal = 0.00;
 
 function display($result){
 		//	echo $row['Title'].": ".$row['ISBN'];
@@ -55,6 +51,7 @@ function display($result){
 	<b>By</b>'.$row['Author_fname'].' '.$row['Author_lname'].'</br><b>Publisher:</b> '.$row['Publisher'].'</td><td><input id= \'qty['.$row['ISBN'].']\' name=\'qty['.$row['ISBN'].']\' value=\''.$row['qty'].'\' size=\'1\' /></td><td>'.$row['Price'].'</td></tr>';
 	}
 }
+
 ?>
 <!DOCTYPE HTML>
 <head>
@@ -91,7 +88,7 @@ function display($result){
 				<div id="bookdetails" style="overflow:scroll;height:180px;width:400px;border:1px solid black;">
 					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">
 						<th width='10%'>Remove</th><th width='60%'>Book Description</th><th width='10%'>Qty</th><th width='10%'>Price</th>
-						<?php display($result) ?>
+						<?php if(!empty($_SESSION['user_id']))display($result) ?>
 					<!--	<tr><td><button name='delete' id='delete' onClick='del("123441");return false;'>Delete Item</button></td><td>iuhdf</br><b>By</b> Avi Silberschatz</br><b>Publisher:</b> McGraw-Hill</td><td><input id='txt123441' name='txt123441' value='1' size='1' /></td><td>12.99</td></tr> -->					</table>
 				</div>
 			</td>
@@ -105,7 +102,7 @@ function display($result){
 				&nbsp;
 			</td>
 			<td align="center">			
-				<?php echo "Subtotal : ".$subtotal?> </td>
+				<?php echo "Subtotal : $".$subtotal?> </td>
 		</tr>
 	</table>
 </body>
