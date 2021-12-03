@@ -1,6 +1,8 @@
 <script>alert('Please enter all values')</script><!DOCTYPE HTML>
 <head>
-<title>UPDATE CUSTOMER PROFILE</title>
+<title>UPDATE ADMIN PROFILE</title>
+
+
 
 </head>
 <?php
@@ -9,20 +11,15 @@ session_start();
 error_reporting(-1);
 ini_set('display_errors', 'On');
 
-
-if(!empty($_SESSION['temp_id']) || empty($_SESSION['user_id'])){                                                       // create dummy registered user for temp user on search screen and populate it with these info
-	header("Location: customer_registration.php");
+if(!isset($_SESSION['admin']) || empty($_SESSION['admin'])){                                                       // create dummy registered user for temp user on search screen and populate it with these info
+	header("Location: index.php");
 	exit;
 	$stmt=null;
 	$pdo=null;
 }
-else{
-	require_once('../PDO_connect.php');
-	$getName = $pdo -> prepare("select username from USER where id = ".$_SESSION['user_id']);
-	$getName->execute();
-	$getName = $getName->fetch(PDO::FETCH_COLUMN);
 
-	if(isset($_POST['update_submit'])){
+
+else if(isset($_POST['update_submit'])){
 	//echo "register submit";
 	//print_r($_POST);
 	//print_r($_SESSION);
@@ -107,9 +104,7 @@ else{
     }
 
     if(empty($data_missing)){
-
-
-
+        require_once('../PDO_connect.php');
 
         $stmt = $pdo -> prepare("update USER set pin = :pin, first_name = :first_name, last_name = :last_name,
 								address = :address, city = :city, state = :state, zip = :zip, credit_card = :credit_card, card_number = :card_number, expiration = :expiration
@@ -148,7 +143,6 @@ else{
     }
 
 }
-}
 
 ?>
 
@@ -160,10 +154,9 @@ else{
 			<td align="right">
 				Username: 
 			</td>
-			<td colspan="1" align="left">
-			<?php echo $getName; ?>
+			<td colspan="3" align="center">
 							</td>
-
+		</tr>
 		<tr>
 			<td align="right">
 				PIN<span style="color:red">*</span>:

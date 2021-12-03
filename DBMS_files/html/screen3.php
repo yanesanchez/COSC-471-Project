@@ -6,7 +6,7 @@ require_once('../PDO_connect.php');
 ob_start();
 session_start();
 //print_r($_GET);
-//print_r($_SESSION);
+print_r($_SESSION);
 //print_r($_POST);
 //echo "session : ".$_SESSION['valid']."search : ".$_GET['search'];
 //$_SESSION['temp_id'] = '';
@@ -84,10 +84,6 @@ if(isset($_GET['cartisbn'])){
 }
 
 //echo "cart contents : ".print_r($cart_contents);
-
-
-
-
 	
 //	echo $_SESSION['username'];
 //	echo $_SESSION['user_id'];
@@ -130,8 +126,7 @@ if(isset($_GET['cartisbn'])){
 	$pstmt.=" WHERE ".$where;
 	}
 	if($category != "all")
-	$pstmt.=" OR BOOK.category_id ".'='." $category";
-
+	$pstmt.=" AND BOOK.category_id ".'='." $category";
 	$stmt = $pdo->prepare("$pstmt");
 	$stmt -> execute();
 
@@ -145,15 +140,14 @@ if(isset($_GET['cartisbn'])){
 
 	//echo "$searchfor";
 
-
-
-
 		$searchlist = '';
 		foreach($searchon as $s)
 		$searchlist.= $s.',';
 		$searchlist = substr($searchlist, 0, -1);
 	//	echo "searchlist: $searchlist";
 
+//print_r($cart_contents);
+//echo $_GET['cartisbn'];
 
 function display_books($result, $cart_contents, $searchfor, $searchlist, $category){
 	//echo "$searchfor";
@@ -162,11 +156,11 @@ foreach ($result as $row){
 	$book_details = '<tr><td align = \'left\'><button name= \'btnCart\' id= \'btnCart\' onClick= \'cart( '.'"'.$row['ISBN'].'"'.', '.'"'.$searchfor.'"'.', '.'"'.$searchlist.'"'.', '.'"'.$category.'", '.'"'.$row['Price'].'"'.')\' ';
 	
 	if($cart_contents == 1)
-	//echo "CART CONTENTS IS 1";
+	echo "CART CONTENTS IS 1";
 		if (isset($_GET['cartisbn']) && $_GET['cartisbn'] == $row['ISBN'])
-		$book_details .= ' disabled';
-	else if(is_array($cart_contents) && in_array(trim($row['ISBN']), $cart_contents) || $row['quantity'] < 1)
-	$book_details .= ' disabled';
+			$book_details .= ' disabled';
+		else if(is_array($cart_contents) && in_array($row['ISBN'], $cart_contents) || $row['quantity'] < 1)
+			$book_details .= ' disabled';
 
 	$book_details .= '> Add to Cart</button></td><td rowspan= \'2\'  align= \'left\'> '.str_replace("'", "\'", $row['Title']).' </br>
 		By '.$row['Author_fname'].' '.$row['Author_lname'].':</b> '.$row['Publisher'].',</br><b>ISBN:</b> '.$row['ISBN'].'</t> <b>Price:</b> '.$row['Price'].'</td></tr><tr>

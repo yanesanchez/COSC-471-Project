@@ -2,7 +2,6 @@
 
 ob_start();
 session_start();
-$_SESSION['cart_id'] = '';
 session_destroy();
 header("Location: screen2.php"); 
 exit;

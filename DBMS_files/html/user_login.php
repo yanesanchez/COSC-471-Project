@@ -10,7 +10,7 @@ if(isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['user
 	require_once('../PDO_connect.php');
 	$username = trim($_POST['username']);
 	$pin = trim($_POST['pin']);
-	$stmt = $pdo -> prepare("SELECT * FROM USER WHERE username = :username AND pin = :pin");
+	$stmt = $pdo -> prepare("SELECT * FROM USER WHERE username = :username AND pin = :pin AND type = 'R'");
 	$stmt -> bindParam(':username', $username);
 	$stmt -> bindParam(':pin', $pin);
 
@@ -19,19 +19,17 @@ if(isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['user
 	$count = $stmt->rowCount();
 
 	if ($count == 1){
-
-	$row = $stmt->fetch();
-	$uid = $row['id'];
-
-	$getCart = $pdo -> prepare("SELECT id from SHOPPING_CART WHERE SHOPPING_CART.user_id = $uid");
-	$getCart -> execute();
-	$cart_id = $getCart ->fetch();
-	$_SESSION['cart_id'] = $cart_id['id'];
-	$_SESSION['valid'] = true;
-	$_SESSION['username'] = $username;
-	$_SESSION['user_id'] = $uid;
-	$_POST['username'] = "";
-	$_POST['pin'] = "";
+		$row = $stmt->fetch();
+		$uid = $row['id'];
+		$getCart = $pdo -> prepare("SELECT id from SHOPPING_CART WHERE SHOPPING_CART.user_id = $uid");
+		$getCart -> execute();
+		$cart_id = $getCart ->fetch();
+		$_SESSION['cart_id'] = $cart_id['id'];
+		$_SESSION['valid'] = true;
+		$_SESSION['username'] = $username;
+		$_SESSION['user_id'] = $uid;
+		$_POST['username'] = "";
+		$_POST['pin'] = "";
 
 	header("location: screen2.php");
     exit;

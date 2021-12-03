@@ -11,8 +11,8 @@ ini_set('display_errors', 'On');
 
 if(isset($_POST['register_submit'])){
 	//echo "register submit";
-	//print_r($_POST);
-	//print_r($_SESSION);
+	print_r($_POST);
+	print_r($_SESSION);
 
     $data_missing = array();
 
@@ -136,23 +136,21 @@ if(isset($_POST['register_submit'])){
 		$stmt->bindParam(':card_number', $card_number);
 		$stmt->bindParam(':expiration', $expiration);           
         $stmt->execute();
-
-        $_SESSION['temp'] = false;
-        $_SESSION['valid'] = true;
+		
+		$affected_rows = $stmt->rowCount();
         }
         else {
-            $stmt = $pdo -> prepare("INSERT INTO USER (type) VALUE (:type)");
             $type = 'R';
-            $stmt->bindParam(':type', $type);
-            $stmt->execute();
-            $stmt = $pdo -> prepare("INSERT INTO USER (id, username, pin, first_name, last_name, 
+
+            $stmt = $pdo -> prepare("INSERT INTO USER (type, username, pin, first_name, last_name, 
                                      address, city, state, zip, credit_card, card_number, expiration) 
-                                     VALUES (LAST_INSERT_ID(), :username, :pin, :first_name, :last_name, 
+                                     VALUES (:type, :username, :pin, :first_name, :last_name, 
                                     :address, :city, :state, :zip, :credit_card, :card_number, :expiration)");
 
             $stmt2 = $pdo -> prepare("SELECT LAST_INSERT_ID() as id");
 
 	    	$stmt->bindParam(':username', $username);
+			$stmt->bindParam(':type', $type);
 	    	$stmt->bindParam(':pin', $pin);
 	    	$stmt->bindParam(':first_name', $firstname);
 	    	$stmt->bindParam(':last_name', $lastname);
@@ -168,23 +166,27 @@ if(isset($_POST['register_submit'])){
             $stmt2 -> execute();
 
             $user_id = $stmt2->fetch();
-
-             $_SESSION['user_id'] = $user_id;
+			 $_SESSION['user_id'] = '';
+			 if(is_array($user_id))
+             $_SESSION['user_id'] = $user_id['id'];
+			 else
+			 $_SESSION['user_id'] = $user_id;
+			 $affected_rows = $stmt2->rowCount();
         }
 
-             $affected_rows = $stmt4->rowCount();
-
+		$_SESSION['affected_rows'] = $affected_rows;
         if($affected_rows > 0){
+			$_SESSION['successs'] = true;
             $_SESSION['temp'] = false;
             $_SESSION['valid'] = true;
             header("Location: screen2.php"); 
             exit;
             $stmt=null;
 			$pdo=null;
-
         }
 
         else{
+			$_SESSION['error'] = "error";
             header("Location: customer_registration.php");
 			exit;
             $stmt=null;
