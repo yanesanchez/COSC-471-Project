@@ -6,12 +6,14 @@ session_start();
 error_reporting(-1);
 ini_set('display_errors', 'On');
 
+print_r($_SESSION);
+
 if(isset($_POST['adminname']) && !empty($_POST['adminname']) && !empty($_POST['pin'])){
 	require_once('../PDO_connect.php');
 
 	$username = trim($_POST['adminname']);
 	$pin = trim($_POST['pin']);
-	$stmt = $pdo -> prepare("SELECT * FROM ADMIN WHERE username = :username AND pin = :pin");
+	$stmt = $pdo -> prepare("SELECT * FROM USER WHERE username = :username AND pin = :pin AND type = 'A'");
 	$stmt -> bindParam(':username', $username);
 	$stmt -> bindParam(':pin', $pin);
 
@@ -31,6 +33,7 @@ if(isset($_POST['adminname']) && !empty($_POST['adminname']) && !empty($_POST['p
 	$_SESSION['valid'] = true;
 	$_SESSION['username'] = $username;
 	$_SESSION['user_id'] = $uid;
+	$_SESSION['admin'] = true;
 
 	header("location: admin_tasks.php");
     exit;
@@ -48,7 +51,7 @@ if(isset($_POST['adminname']) && !empty($_POST['adminname']) && !empty($_POST['p
 
 <body>
 <table align="center" style="border:2px solid blue;">
-		<form action="admin_tasks.php" method="post" id="adminlogin_screen">
+		<form action="" method="post" id="adminlogin_screen">
 		<tr>
 			<td align="right">
 				Adminname<span style="color:red">*</span>:

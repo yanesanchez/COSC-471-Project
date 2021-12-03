@@ -10,7 +10,7 @@ if(isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['user
 	require_once('../PDO_connect.php');
 	$username = trim($_POST['username']);
 	$pin = trim($_POST['pin']);
-	$stmt = $pdo -> prepare("SELECT * FROM USER WHERE username = :username AND pin = :pin");
+	$stmt = $pdo -> prepare("SELECT * FROM USER WHERE username = :username AND pin = :pin AND type = 'R'");
 	$stmt -> bindParam(':username', $username);
 	$stmt -> bindParam(':pin', $pin);
 

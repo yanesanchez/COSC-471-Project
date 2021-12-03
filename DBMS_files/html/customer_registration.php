@@ -11,8 +11,8 @@ ini_set('display_errors', 'On');
 
 if(isset($_POST['register_submit'])){
 	//echo "register submit";
-	//print_r($_POST);
-	//print_r($_SESSION);
+	print_r($_POST);
+	print_r($_SESSION);
 
     $data_missing = array();
 
@@ -136,8 +136,7 @@ if(isset($_POST['register_submit'])){
 		$stmt->bindParam(':card_number', $card_number);
 		$stmt->bindParam(':expiration', $expiration);           
         $stmt->execute();
-
-
+		
 		$affected_rows = $stmt->rowCount();
         }
         else {
