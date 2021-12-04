@@ -6,7 +6,7 @@ session_start();
 error_reporting(-1);
 ini_set('display_errors', 'On');
 
-print_r($_SESSION);
+//print_r($_SESSION);
 
 if(isset($_POST['adminname']) && !empty($_POST['adminname']) && !empty($_POST['pin'])){
 	require_once('../PDO_connect.php');

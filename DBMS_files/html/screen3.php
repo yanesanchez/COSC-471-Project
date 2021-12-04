@@ -211,11 +211,11 @@ function display_error($searchfor){
 			<div id="bookdetails" style="overflow:scroll;height:180px;width:400px;border:1px solid black;background-color:LightBlue">
 			<table>
 			<?php
-			if(count($result) > 0){
-			display_books($result, $cart_contents, $searchfor, $searchlist, $category);
-			}
-			else
-			display_error($searchfor);
+			// error checking -----------
+			//if(count($result) > 0)
+			//display_books($result, $cart_contents, $searchfor, $searchlist, $category);
+			// else
+			// display_error($searchfor);
 			?>
 			</table>
 			</div>

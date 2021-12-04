@@ -22,7 +22,7 @@ print_r($_SESSION);
 			</form>
 		</tr>
 		<tr>
-			<form action=" " method="post" id="orders">
+			<form action="place_orders.php" method="post" id="orders">
 			<td align="center">
 				<input type="submit" name="place_orders" id="place_orders" value="Place Orders" style="width:200px;">
 			</td>
