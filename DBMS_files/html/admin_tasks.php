@@ -10,7 +10,7 @@ print_r($_SESSION);
 
 <!DOCTYPE HTML>
 <head>
-	<title>ADMIN TASKS</title>
+	<title> ADMIN TASKS </title>
 </head>
 <body>
 	<table align="center" style="border:2px solid blue;">

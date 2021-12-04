@@ -10,7 +10,7 @@ print_r($_SESSION);
 <!DOCTYPE html>
 <html>
 <head>
-	<title> REPORTS </title>
+	<title> PLACE ORDERS </title>
 </head>
 <body>
 

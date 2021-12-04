@@ -10,7 +10,7 @@ print_r($_SESSION);
 <!DOCTYPE html>
 <html>
 <head>
-	<title> REPORTS </title>
+	<title> BOOKSTORE CATALOG </title>
 </head>
 <body>
 
