@@ -46,7 +46,7 @@ function display_cart($cart){
 	<form id="buy" action="proof_purchase.php" method="post">
 	<tr>
 	<td>
-	Shipping Address:
+	Shipping Address: <?php echo $user_info['address']; ?>
 	</td>
 	</tr>
 	<td colspan="2">

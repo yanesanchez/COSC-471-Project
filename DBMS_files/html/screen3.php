@@ -6,7 +6,7 @@ require_once('../PDO_connect.php');
 ob_start();
 session_start();
 //print_r($_GET);
-print_r($_SESSION);
+//print_r($_SESSION);
 //print_r($_POST);
 //echo "session : ".$_SESSION['valid']."search : ".$_GET['search'];
 //$_SESSION['temp_id'] = '';
@@ -91,6 +91,7 @@ if(isset($_GET['cartisbn'])){
 	$searchfor = trim($_GET['searchfor']);
 	$searchon = ($_GET['searchon']);
 	$category = trim($_GET['category']);
+	//echo $category;
 
 	//echo "SEARCHON : $searchon";
 	$pstmt = "select isbn as ISBN, title as Title, 
@@ -105,9 +106,9 @@ if(isset($_GET['cartisbn'])){
 	$searchon = explode(',',$searchon);
 	if($searchon[0] == 'anywhere'){
 	//	echo "anywhere";
-	$pstmt.= " WHERE BOOK.author_id in (select id from AUTHOR where first_name like '%$searchfor%' or last_name like '%$searchfor%') 
+	$pstmt.= " WHERE (BOOK.author_id in (select id from AUTHOR where first_name like '%$searchfor%' or last_name like '%$searchfor%') 
 	OR BOOK.publisher_id in (select id from PUBLISHER where name like '%$searchfor%') 
-	OR BOOK.title LIKE '%$searchfor%'";
+	OR BOOK.title LIKE '%$searchfor%')";
 	}
 	else {
 	//	echo "not anywhere";
@@ -127,6 +128,8 @@ if(isset($_GET['cartisbn'])){
 	}
 	if($category != "all")
 	$pstmt.=" AND BOOK.category_id ".'='." $category";
+
+	//echo $pstmt;
 	$stmt = $pdo->prepare("$pstmt");
 	$stmt -> execute();
 

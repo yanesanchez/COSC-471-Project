@@ -95,7 +95,7 @@ function display_order($cart){
 	<form id="buy" action="" method="post">
 	<tr>
 	<td>
-	Shipping Address:
+	Shipping Address: <?php echo $user_info['address']; ?>
 	</td>
 	</tr>
 	<td colspan="2">

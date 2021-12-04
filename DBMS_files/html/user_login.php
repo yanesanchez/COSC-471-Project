@@ -30,7 +30,8 @@ if(isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['user
 		$_SESSION['user_id'] = $uid;
 		$_POST['username'] = "";
 		$_POST['pin'] = "";
-
+		$_SESSION['admin'] = false;
+		
 	header("location: screen2.php");
     exit;
 	}
