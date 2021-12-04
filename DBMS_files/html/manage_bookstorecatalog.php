@@ -6,7 +6,7 @@ session_start();
 
 error_reporting(-1);
 ini_set('display_errors', 'On');
-
+print_r($_GET);
 
 if(isset($_GET['addType'])){
 	if($_GET['addType'] == 'author')
@@ -18,8 +18,8 @@ if(isset($_GET['addType'])){
 	$addStmt->execute();
 }
 if(isset($_GET['delType'])){
-
-	if($_GET['delType'] = 'book'){
+	echo "deleting";
+	if($_GET['delType'] == 'book'){
 		$idType = "isbn";
 		$delId = "'".$_GET['delId']."'";
 	}
@@ -29,6 +29,7 @@ if(isset($_GET['delType'])){
 	}
 
 	$type = strtoupper($_GET['delType']);
+	echo "delete from $type where ".$idType." = ".$delId;
 	$delStmt = $pdo->prepare("delete from $type where ".$idType." = ".$delId);
 	$delStmt->execute();
 
