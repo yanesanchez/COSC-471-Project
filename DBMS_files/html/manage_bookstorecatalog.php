@@ -6,7 +6,7 @@ session_start();
 
 error_reporting(-1);
 ini_set('display_errors', 'On');
-print_r($_GET);
+//print_r($_GET);
 
 if(isset($_GET['addType'])){
 	if($_GET['addType'] == 'author')
