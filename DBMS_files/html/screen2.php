@@ -38,7 +38,12 @@ require_once('../PDO_connect.php');
 			<td>Category: </td>
 				<td><select name="category">
 						<option value='all' selected='selected'>All Categories</option>
-						<option value='1'>Fantasy</option><option value='2'>Adventure</option><option value='3'>Fiction</option><option value='4'>Horror</option>				</select></td>
+						<option value='1'>Nonfiction</option>
+						<option value='2'>Fiction</option>
+						<option value='3'>Young Adult</option>
+						<option value='4'>Philosophy</option>
+						<option value='5'>Psychology</option>				
+					</select></td>
 				</form>
 	<form action="index.php" method="post">	
 				<td><input type="submit" name="exit" value="EXIT 3-B.com" /></td>
