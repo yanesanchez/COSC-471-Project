@@ -1,4 +1,5 @@
 <?php
+require_once('../PDO_connect.php');
 ob_start();
 session_start();
 
@@ -13,6 +14,7 @@ print_r($_SESSION);
 	<title> REPORTS </title>
 	<style>
 		table { width: 520px; margin: auto; border:1px solid blue;" };
+		td.usersR { width: 50%; };
 	</style>
 </head>
 <body align="center">
@@ -24,9 +26,20 @@ print_r($_SESSION);
 			<th colspan="2"> Total Registered Customers </th>
 		</tr>
 		<tr>
+			<td> Registered customers as of: <?php ?></td>
+			<td id="usersR"> 
 			<?php
 				// "select count(type)  from USER where type = 'R'"
+			$stmt = $pdo -> prepare("SELECT count(*) from USER where type = 'R'");
+			$stmt -> execute();
+			$usersR = $stmt -> fetch(PDO::FETCH_ASSOC);
+			foreach ($usersR as $u) {
+				echo $u; 
+			}
+			//echo "$usersR";
+
 			?>
+		</td>
 		</tr>
 	</table>
 
