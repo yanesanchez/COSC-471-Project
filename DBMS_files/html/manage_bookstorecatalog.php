@@ -118,13 +118,13 @@ function display_publishers($getPublishers){
 		<tr>	<!-- row -->
 			<td> <!-- cell -->
 				<div id="bookdetails" style="overflow:scroll;height:180px;width:450px;border:1px solid black;"> <!-- scroll thingy -->
-					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">    <!-- table -->
-						<th>Remove</th><th width='60%'>Book Description</th><th width='10%'>Price</th>
+					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">     <!-- table -->
+						<th>Remove</th><th width='60%'>Book Description</th><th width='10%'>Price</th> <!-- table headers -->
 						<?php display_books($getBooks);?> <!-- display function called in each cell-->
-					</table>
-				</div>
-			</td>
-			<td>
+					</table> <!-- close the table -->
+				</div>  <!-- close the div --> -->
+			</td>	<!-- close the cell -->
+			<td> <!-- new cell -->
 				<div id="bookdetails" style="overflow:scroll;height:180px;width:250px;border:1px solid black;">
 					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">
 						<th>Remove</th><th>First Name</th><th>Last Name</th><th>ID</th>
@@ -148,7 +148,7 @@ function display_publishers($getPublishers){
 					</table>
 				</div>
 			</td>
-		</tr>
+		</tr>				<!-- end of row -->
 		<tr>
 			<td align="center">
 				&nbsp;
