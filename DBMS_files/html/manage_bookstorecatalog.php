@@ -29,7 +29,6 @@ if(isset($_GET['delType'])){
 	}
 
 	$type = strtoupper($_GET['delType']);
-	echo "delete from $type where ".$idType." = ".$delId;
 	$delStmt = $pdo->prepare("delete from $type where ".$idType." = ".$delId);
 	$delStmt->execute();
 
