@@ -7,6 +7,7 @@ session_start();
 error_reporting(-1);
 ini_set('display_errors', 'On');
 
+
 if(isset($_GET['addType'])){
 	if($_GET['addType'] == 'author')
 		$values = "(first_name, last_name) values ('".$_GET['addValue']."', '".$_GET['addLName']."');";
@@ -97,6 +98,7 @@ function display_publishers($getPublishers){
 <html>
 <head>
 	<title> BOOKSTORE CATALOG </title>
+
 
 	<script>
 	function add(type, value, lname){
@@ -237,3 +239,5 @@ function display_publishers($getPublishers){
 
 	</table>
 </body>
+</html>
+
