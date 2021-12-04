@@ -5,7 +5,7 @@ session_start();
 
 error_reporting(-1);
 ini_set('display_errors', 'On');
-print_r($_SESSION);
+//print_r($_SESSION);
 ?>
 
 <!DOCTYPE html>
@@ -13,21 +13,23 @@ print_r($_SESSION);
 <head>
 	<title> REPORTS </title>
 	<style>
-		table { width: 520px; margin: auto; border:1px solid blue;" };
-		td.usersR { width: 50%; };
+		td { padding: 5px; };
+		th { padding: 10px; };
+		table { width: 520px; margin: auto; border:2px solid blue;" };
+
 	</style>
 </head>
 <body align="center">
-	<h2> ADMINISTRATOR REPORTS </h2>
+	<h1> ADMINISTRATOR REPORTS </h1>
 <main>
 	<!-- TOTAL NUMBER of REGISTERED CUSTOMERS in the system AT THE TIME AND DATE OF INQUIRY  -->
 	<table>
 		<tr>
-			<th colspan="2"> Total Registered Customers </th>
+			<th colspan="2" class="title"> Total Registered Customers </th>
 		</tr>
 		<tr>
-			<td> Registered customers as of: <?php ?></td>
-			<td id="usersR"> 
+			<td style="text-align: left;"> Registered customers as of <?php echo date("m/d/Y h:ia")?> : </td>
+			<td style="width: 30%;"> 
 			<?php
 				// "select count(type)  from USER where type = 'R'"
 			$stmt = $pdo -> prepare("SELECT count(*) from USER where type = 'R'");
@@ -36,7 +38,6 @@ print_r($_SESSION);
 			foreach ($usersR as $u) {
 				echo $u; 
 			}
-			//echo "$usersR";
 
 			?>
 		</td>
@@ -47,10 +48,10 @@ print_r($_SESSION);
 	<!-- TOTAL NUMBER of BOOK TITLES available in EACH CATEGORY -->
 	<table>
 		<tr>
-			<th> Book Titles & Categories Available </th>
+			<th colspan="2"> Book Titles & Categories Available </th>
 		</tr>
 		<tr>
-			<td><b> Nonfiction </b></td>
+			<td style="text-align: left;"><b> Nonfiction </b></td>
 			<td>
 				<?php
 				// "select name as n, count(title) as c from CATEGORY, BOOK where BOOK.category_id= CATEGORY.id group by name order by c desc"
@@ -58,25 +59,25 @@ print_r($_SESSION);
 			</td>
 		</tr>
 		<tr>
-			<td><b> Fiction </b></td>
+			<td style="text-align: left;"><b> Fiction </b></td>
 			<td>
 				
 			</td>
 		</tr>
 		<tr>
-			<td><b> Young Adult </b></td>
+			<td style="text-align: left;"><b> Young Adult </b></td>
 			<td>
 				
 			</td>
 		</tr>
 		<tr>
-			<td><b> Philosophy </b></td>
+			<td style="text-align: left;"><b> Philosophy </b></td>
 			<td>
 				
 			</td>
 		</tr>
 		<tr>
-			<td><b> Psychology </b></td>
+			<td style="text-align: left;"><b> Psychology </b></td>
 			<td>
 				
 			</td>
