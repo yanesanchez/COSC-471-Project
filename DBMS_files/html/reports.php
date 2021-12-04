@@ -12,11 +12,12 @@ print_r($_SESSION);
 <head>
 	<title> REPORTS </title>
 	<style>
-		table.main { align: center; border:1px solid blue;" }
+		table { width: 520px; margin: auto; border:1px solid blue;" };
 	</style>
 </head>
-<body>
+<body align="center">
 	<h2> ADMINISTRATOR REPORTS </h2>
+<main>
 	<!-- TOTAL NUMBER of REGISTERED CUSTOMERS in the system AT THE TIME AND DATE OF INQUIRY  -->
 	<table>
 		<tr>
@@ -24,10 +25,7 @@ print_r($_SESSION);
 		</tr>
 		<tr>
 			<?php
-				// query for number of users
-					//<td>  </td>
-				// time and date of inquiry
-					//<td>  </td>
+				// "select count(type)  from USER where type = 'R'"
 			?>
 		</tr>
 	</table>
@@ -36,12 +34,39 @@ print_r($_SESSION);
 	<!-- TOTAL NUMBER of BOOK TITLES available in EACH CATEGORY -->
 	<table>
 		<tr>
-			<th colspan="2"> Book Titles & Categories Available </th>
+			<th> Book Titles & Categories Available </th>
 		</tr>
 		<tr>
-			<?php
+			<td><b> Nonfiction </b></td>
+			<td>
+				<?php
+				// "select name as n, count(title) as c from CATEGORY, BOOK where BOOK.category_id= CATEGORY.id group by name order by c desc"
+				?>
+			</td>
+		</tr>
+		<tr>
+			<td><b> Fiction </b></td>
+			<td>
 				
-			?>
+			</td>
+		</tr>
+		<tr>
+			<td><b> Young Adult </b></td>
+			<td>
+				
+			</td>
+		</tr>
+		<tr>
+			<td><b> Philosophy </b></td>
+			<td>
+				
+			</td>
+		</tr>
+		<tr>
+			<td><b> Psychology </b></td>
+			<td>
+				
+			</td>
 		</tr>
 	</table>
 
@@ -53,7 +78,7 @@ print_r($_SESSION);
 		</tr>
 		<tr>
 			<?php
-				
+				// "select MONTHNAME(date) as month, truncate(avg(total),2) as avg from ORDER_PLACED where YEAR(date) = YEAR(CURDATE()) group by MONTHNAME(date)"
 			?>
 		</tr>
 	</table>
@@ -66,10 +91,10 @@ print_r($_SESSION);
 		</tr>
 		<tr>
 			<?php
-				
+				// "select title, count(description) as c from BOOK, REVIEW where BOOK.isbn = REVIEW.isbn group by title"
 			?>
 		</tr>
 	</table>
-
+</main>
 </body>
 </html>
