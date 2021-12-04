@@ -98,13 +98,13 @@ function display_publishers($getPublishers){
 <head>
 	<title> BOOKSTORE CATALOG </title>
 
-
+														<!-- onClick functions, values appear in url/$_GET-->
 	<script>
 	function add(type, value, lname){
-		window.location.href="manage_bookstorecatalog.php?addType="+ type + "&addValue=" + value+ "&addLName=" + lname;
+		window.location.href="manage_bookstorecatalog.php?addType="+ type + "&addValue=" + value+ "&addLName=" + lname;	
 	}
 	function del(type, id){
-		window.location.href="manage_bookstorecatalog.php?delType="+ type + "&delId=" + id;
+		window.location.href="manage_bookstorecatalog.php?delType="+ type + "&delId=" + id;		
 	}
 	function add_book(title, isbn, author, category, publisher, price){
 		window.location.href="manage_bookstorecatalog.php?isbn="+ isbn + "&title=" + title + "&author=" + author + "&category=" + category + "&publisher=" + publisher + "&price=" + price;
@@ -113,34 +113,34 @@ function display_publishers($getPublishers){
 	</script>
 		<header align="center"><h1>Catalog Manager</h1></header> 
 </head>
-<body>
+<body> 														<!-- most of this is copied from shopping cart -->
 	<table align="center" style="border:2px solid blue;">
-		<tr>
-			<td  colspan="">
-				<div id="bookdetails" style="overflow:scroll;height:180px;width:500px;border:1px solid black;">
-					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">
+		<tr>	<!-- row -->
+			<td> <!-- cell -->
+				<div id="bookdetails" style="overflow:scroll;height:180px;width:450px;border:1px solid black;"> <!-- scroll thingy -->
+					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">    <!-- table -->
 						<th>Remove</th><th width='60%'>Book Description</th><th width='10%'>Price</th>
-						<?php display_books($getBooks);?>
+						<?php display_books($getBooks);?> <!-- display function called in each cell-->
 					</table>
 				</div>
 			</td>
-			<td  colspan="">
-				<div id="bookdetails" style="overflow:scroll;height:180px;width:300px;border:1px solid black;">
+			<td>
+				<div id="bookdetails" style="overflow:scroll;height:180px;width:250px;border:1px solid black;">
 					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">
 						<th>Remove</th><th>First Name</th><th>Last Name</th><th>ID</th>
 						<?php display_authors($getAuthors);?>
 					</table>
 				</div>
 			</td>
-			<td  colspan="">
-				<div id="bookdetails" style="overflow:scroll;height:180px;width:300px;border:1px solid black;">
+			<td>
+				<div id="bookdetails" style="overflow:scroll;height:180px;width:250px;border:1px solid black;">
 					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">
 						<th>Remove</th><th>Category</th><th>ID</th>
-						<?php display_categories($getCategories);?>
+						<?php display_categories($getCategories);?> 
 					</table>
 				</div>
 			</td>
-			<td  colspan="">
+			<td>
 				<div id="bookdetails" style="overflow:scroll;height:180px;width:300px;border:1px solid black;">
 					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">
 						<th>Remove</th><th>Publisher</th><th>ID</th>
@@ -154,7 +154,7 @@ function display_publishers($getPublishers){
 				&nbsp;
 			</td>
 		</tr>
-		<tr>
+		<tr>										<!-- add table headers -->
 		<td colspan="" align="left">New Book
 			</td>
 			<td colspan="" align="left">New Author
@@ -165,8 +165,8 @@ function display_publishers($getPublishers){
 			</td>
 </tr>
 <tr>
-<td rowspan="4" align="left">
-<table style="border:2px solid gray;">
+<td rowspan="4" align="left">											<!-- add book table -->
+<table style="border:2px solid gray;"> 
 <tr>
 <td>
 	<input type="text" id="title" name="title" placeholder="Title">
@@ -174,7 +174,7 @@ function display_publishers($getPublishers){
 <td>
 	<input type="text" id="auth_id" name="auth_id" placeholder="Author ID">
 </td>
-</tr>
+</tr>																			
 <tr>
 	<td>
 <input type="text" id="cat_id" name="cat_id" placeholder="Category ID">
@@ -188,14 +188,14 @@ function display_publishers($getPublishers){
 <input type="text" id="price" name="price" placeholder="Price">
 </td>
 </tr>
-<tr><td align = "center" colspan = "2">
+<tr><td align = "center" colspan = "2">						<!-- getElementById('input id')  -->
 <button name="add_book" id="add_book" onClick="add_book(document.getElementById('title').value, document.getElementById('isbn').value, 
 													    document.getElementById('auth_id').value, document.getElementById('cat_id').value,
-														document.getElementById('pub_id').value,document.getElementById('price').value,);return false;">Go!</button>
+														document.getElementById('pub_id').value,document.getElementById('price').value,);return false;">Update</button>
 </td>
 </tr>
 </table>
-			<td valign = "top">
+			<td valign = "top">											<!-- add author -->
 				<table style="border:2px solid gray;">
 				<tr><td>
 				<input type="text" id="authorf" name="authorf" placeholder="First name">
@@ -204,27 +204,27 @@ function display_publishers($getPublishers){
 				<input type="text" id="authorl" name="authorl" placeholder="Last name">
 				</td></tr>
 				<tr><td>
-				<button name="add_auth" id="add_auth" onClick="add('author', document.getElementById('authorf').value, document.getElementById('authorl').value);return false;">Go!</button>
+				<button name="add_auth" id="add_auth" onClick="add('author', document.getElementById('authorf').value, document.getElementById('authorl').value);return false;">Update</button>
 				</td></tr>
 				</table>	
 			</td>
-			<td valign = "top">
+			<td valign = "top">											<!-- add category -->
 				<table style="border:2px solid gray;">
 				<tr><td>
 				<input type="text" id="cat" name="cat" placeholder="Category name">
 				</td></tr>
 				<tr><td>
-				<button name="add_cat" id="add_cat" onClick="add('category', document.getElementById('cat').value, '');return false;">Go!</button>
+				<button name="add_cat" id="add_cat" onClick="add('category', document.getElementById('cat').value, '');return false;">Update</button>
 				</td></tr>
 				</table>	
 			</td>
-			<td valign = "top">
+			<td valign = "top">											<!-- add publisher -->
 				<table style="border:2px solid gray;">
 				<tr><td>
 				<input type="text" id="pub" name="pub" placeholder="Publisher name">
 				</td></tr>
 				<tr><td>
-				<button name="add_pub" id="add_pub" onClick="add('publisher', document.getElementById('pub').value, '');return false;">Go!</button>
+				<button name="add_pub" id="add_pub" onClick="add('publisher', document.getElementById('pub').value, '');return false;">Update</button>
 				</td></tr>
 				</table>
 			</td>
@@ -233,9 +233,6 @@ function display_publishers($getPublishers){
 			</td>
 		</tr>
 		<tr>
-
-
-
 	</table>
 </body>
 </html>
