@@ -8,18 +8,17 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 //print_r($_GET);
 
-if(isset($_GET['addType'])){
+if(isset($_GET['addType'])){			// different format for authors - (first_name, last_name) vs (name) 
 	if($_GET['addType'] == 'author')
-		$values = "(first_name, last_name) values ('".$_GET['addValue']."', '".$_GET['addLName']."');";
+		$values = "(first_name, last_name) values ('".$_GET['addValue']."', '".$_GET['addLName']."');"; // second half of insert statement in author format
 	else 
-	$values = "(name) values ('".$_GET['addValue']."');";
+	$values = "(name) values ('".$_GET['addValue']."');";   // second half of insert statement in category/publisher format
 	$type = strtoupper($_GET['addType']);
 	$addStmt = $pdo -> prepare('insert into '.$type.$values);
 	$addStmt->execute();
 }
 if(isset($_GET['delType'])){
-	echo "deleting";
-	if($_GET['delType'] == 'book'){
+	if($_GET['delType'] == 'book'){			//delete authors, categories and publishers by id, delete books by isbn
 		$idType = "isbn";
 		$delId = "'".$_GET['delId']."'";
 	}
@@ -33,7 +32,7 @@ if(isset($_GET['delType'])){
 	$delStmt->execute();
 
 }
-if(isset($_GET['isbn'])){
+if(isset($_GET['isbn'])){			// add books, similar to screen 3
 	$title = $_GET['title'];
 	$isbn = $_GET['isbn'];
 	$author = $_GET['author'];
@@ -69,7 +68,7 @@ $getPublishers = $getPublishers->fetchAll(PDO::FETCH_ASSOC);
 
 
 
-function display_books($getBooks){
+function display_books($getBooks){   // called in html below, copied from shopping cart
 	foreach ($getBooks as $row){
 	echo '<tr><td><button name=\'delete\' id=\'delete\' onClick=\'del("book", '.'"'.$row['ISBN'].'"'.');return false;\'>Delete Item</button></td><td>'.$row['Title'].'</br>
 	<b>By</b>'.$row['Author_fname'].' '.$row['Author_lname'].'</br><b>Publisher:</b> '.$row['Publisher'].'</td><td>'.$row['Price'].'</td></tr>';

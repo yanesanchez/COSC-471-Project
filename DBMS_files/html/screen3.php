@@ -5,36 +5,26 @@
 require_once('../PDO_connect.php');
 ob_start();
 session_start();
-//print_r($_GET);
-//print_r($_SESSION);
-//print_r($_POST);
-//echo "session : ".$_SESSION['valid']."search : ".$_GET['search'];
-//$_SESSION['temp_id'] = '';
-//$_SESSION['user_id'] = '';
-if(isset($_SESSION['valid']) && !empty($_SESSION['valid'])){
+
+if(isset($_SESSION['valid']) && !empty($_SESSION['valid'])){		// registered user
 	if(!empty($_SESSION['user_id'])){
-	//	echo "reg user";
 		$stmt = $pdo -> prepare("SELECT id from SHOPPING_CART where user_id = ".$_SESSION['user_id']);
 		$stmt -> execute();
 		$cart_exists = $stmt -> fetch(PDO::FETCH_COLUMN);
-	//	print_r($cart_exists);
 
-		if($cart_exists > 0){
-		//	echo "old cart : ";
+		if($cart_exists > 0){							/// user alreaady has a cart
 			$_SESSION['cart_id'] = $cart_exists;
 			$stmt = $pdo -> prepare("SELECT isbn FROM CART_ITEM, SHOPPING_CART WHERE SHOPPING_CART.user_id = ".$_SESSION['user_id']." AND CART_ITEM.cart_id = SHOPPING_CART.id");
 			$stmt -> execute();
 			$cart_contents = $stmt->fetchAll(PDO::FETCH_COLUMN);
 		}
-		else{
-		//	echo "new cart";
+		else{											// user needs a cart
 			$stmt = $pdo -> prepare("INSERT INTO SHOPPING_CART (user_id) VALUES (:user_id)");
 			$stmt ->bindParam(':user_id', $_SESSION['user_id']);
 			$stmt ->execute();
 			$stmt = $pdo -> prepare("SELECT id from SHOPPING_CART where user_id = ".$_SESSION['user_id']);
 			$stmt -> execute();
 			$_SESSION['cart_id'] = $stmt -> fetch(PDO::FETCH_COLUMN);
-		//	echo "cart id: ".$_SESSION['cart_id'];
 			$cart_contents = '';
 		}
 	}
