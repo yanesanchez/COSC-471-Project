@@ -17,12 +17,12 @@ if($_POST['cardgroup'] == 'new_card'){
 					$stmt -> execute();
 }
 
-$stmt = $pdo -> prepare("select * from USER where id = ".trim($_SESSION['user_id']));
+$stmt = $pdo -> prepare("SELECT * from USER where id = ".trim($_SESSION['user_id']));
 $stmt -> execute();
 $user_info = $stmt -> fetch(PDO::FETCH_ASSOC);
 //echo "user : ";
 //print_r($user_info);
-$stmt = $pdo -> prepare("select title, CART_ITEM.isbn as isbn, CART_ITEM.price as p, 
+$stmt = $pdo -> prepare("SELECT title, CART_ITEM.isbn as isbn, CART_ITEM.price as p, 
 (select first_name from AUTHOR where BOOK.author_id = id) as Author_fname, 
 (select last_name from AUTHOR where BOOK.author_id = id) as Author_lname,  
 (select name from CATEGORY where BOOK.category_id = id) as Category, 
@@ -55,31 +55,31 @@ else{
 }
 
 
-$stmt = $pdo -> prepare("insert into ORDER_PLACED (user_id, total, date, card_number, credit_card, expiration) 
+$stmt = $pdo -> prepare("INSERT into ORDER_PLACED (user_id, total, date, card_number, credit_card, expiration) 
 						VALUES ('".trim($_SESSION['user_id'])."', $subtotal+$shipping, '$insert_date', $card_number, '$credit_card', '$card_exp')");
 $stmt -> execute();
 $stmt = $pdo -> prepare("SELECT LAST_INSERT_ID()");
 $stmt -> execute();
 $order_id = $stmt -> fetchALL(PDO::FETCH_COLUMN);
 $order_id = $order_id[0];
-//print_r($order_id);
+print_r($order_id);
 foreach($cart as $c){
 
-	$stmt = $pdo -> prepare('insert into ORDER_ITEM (order_id , isbn, cost, quantity)
-							values ('.$order_id.', \''.$c['isbn'].'\', '.$c['p'].', '.$c['qty'].')');
+	$stmt = $pdo -> prepare("INSERT into ORDER_ITEM (order_id , isbn, cost, quantity)
+							values ('.$order_id.', \''.$c['isbn'].'\', '.$c['p'].', '.$c['qty'].')";
 							$stmt -> execute();
 }
 
-$stmt = $pdo -> prepare("delete from CART_ITEM where cart_id = ".$_SESSION['cart_id']);
+$stmt = $pdo -> prepare("DELETE from CART_ITEM where cart_id = ".$_SESSION['cart_id']);
 $stmt -> execute();
-$stmt = $pdo -> prepare("delete from SHOPPING_CART  where user_id = ".$_SESSION['user_id']);
+$stmt = $pdo -> prepare("DELETE from SHOPPING_CART  where user_id = ".$_SESSION['user_id']);
 $stmt -> execute();
 
 function display_order($cart){
 	require_once('../PDO_connect.php');
 
 	foreach($cart as $c){
-		echo '<tr><td>'.$c['title'].'</br><b>By</b> '.$c['Author_fname'].' '.$c['Author_lname'].'</br><b>Publisher:</b> '.$c['Publisher'].'</td><td>'.$c['qty'].'</td><td>$'.$c['Price'].'</td></tr>';
+		echo "<tr><td>'.$c['title'].'</br><b>By</b> '.$c['Author_fname'].' '.$c['Author_lname'].'</br><b>Publisher:</b> '.$c['Publisher'].'</td><td>'.$c['qty'].'</td><td>$'.$c['Price'].'</td></tr>";
 	}
 }
 }

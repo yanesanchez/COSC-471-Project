@@ -7,12 +7,12 @@ session_start();
 //ini_set('display_errors', 'On');
 //print_r($_SESSION);
 if(!empty($_SESSION['user_id']) && (!empty($_SESSION['temp']) || $_SESSION['temp'] == false || !isset($_SESSION['temp']))){
-$stmt = $pdo -> prepare("select * from USER where id = ".trim($_SESSION['user_id']));
+$stmt = $pdo -> prepare("SELECT * from USER where id = ".trim($_SESSION['user_id']));
 $stmt -> execute();
 $user_info = $stmt -> fetch(PDO::FETCH_ASSOC);
 //echo "user : ";
 //print_r($user_info);
-$stmt = $pdo -> prepare("select title, 	
+$stmt = $pdo -> prepare("SELECT title, 	
 (select first_name from AUTHOR where BOOK.author_id = id) as Author_fname, 
 (select last_name from AUTHOR where BOOK.author_id = id) as Author_lname, 
 (select name from CATEGORY where BOOK.category_id = id) as Category, 
@@ -97,12 +97,12 @@ function display_cart($cart){
 	</tr>
 	<tr>
 		<td align="right">
-			<input type= <?php if(isset($_SESSION['temp']) && $_SESSION['temp'] == 1)echo "button"; else echo "submit"; ?> id="buyit" name="btnbuyit" value="BUY IT!" <?php if(isset($_SESSION['temp']) && $_SESSION['temp'] == 1) echo 'onClick = "register_alert()"'; ?>>
+			<input type="<?php if(isset($_SESSION['temp']) && $_SESSION['temp'] == 1)echo "button"; else echo "submit"; ?>" id="buyit" name="btnbuyit" value="BUY IT!" <?php if(isset($_SESSION['temp']) && $_SESSION['temp'] == 1) echo 'onClick = "register_alert()"'; ?>>
 		</td>
 		</form>
 		<td align="right">
 			<form id="update" action="update_customerprofile.php" method="post">
-			<input type=<?php if(isset($_SESSION['temp']) && $_SESSION['temp'] == 1) echo "button"; else echo "submit"; ?> id="update_customerprofile" name="update_customerprofile" value="Update Customer Profile"<?php if(isset($_SESSION['temp']) && $_SESSION['temp'] == 1) echo 'onClick = "register_alert2()"'; ?>>
+			<input type="<?php if(isset($_SESSION['temp']) && $_SESSION['temp'] == 1) echo "button"; else echo "submit"; ?>" id="update_customerprofile" name="update_customerprofile" value="Update Customer Profile"<?php if(isset($_SESSION['temp']) && $_SESSION['temp'] == 1) echo "onClick = 'register_alert2()'"; ?>>
 			</form>
 		</td>
 		<td align="left">
