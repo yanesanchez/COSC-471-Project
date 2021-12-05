@@ -13,34 +13,40 @@ ini_set('display_errors', 'On');
 <head>
 	<title> REPORTS </title>
 	<style>
-		td { padding: 5px; };
-		th { padding: 10px; };
-		table { width: 520px; margin: auto; border:2px solid blue;" };
-
+		td { padding: 5px; }
+		th { padding: 5px; }
+		table { width: 520px; 
+			margin: auto; 
+			border-width: 2px; 
+			border-style: solid; 
+			border-color: blue; }
 	</style>
 </head>
 <body align="center">
 	<h1> ADMINISTRATOR REPORTS </h1>
 <main>
+	
 	<!-- TOTAL NUMBER of REGISTERED CUSTOMERS in the system AT THE TIME AND DATE OF INQUIRY  -->
 	<table>
 		<tr>
-			<th colspan="2" class="title"> Total Registered Customers </th>
+			<th colspan="2"> Total Registered Customers </th>
 		</tr>
 		<tr>
-			<td style="text-align: left;"> Registered customers as of <?php echo date("m/d/Y h:ia")?> : </td>
-			<td style="width: 30%;"> 
+			<td style="text-align: left;"> Registered Customers: </td>
+			<td> 
 			<?php
-				// "select count(type)  from USER where type = 'R'"
 			$stmt = $pdo -> prepare("SELECT count(*) from USER where type = 'R'");
 			$stmt -> execute();
 			$usersR = $stmt -> fetch(PDO::FETCH_ASSOC);
 			foreach ($usersR as $u) {
 				echo $u; 
 			}
-
 			?>
-		</td>
+			</td>
+		</tr>
+		<tr>
+			<td style="text-align: left;"> Date of Report: </td>
+			<td> <?php echo date("m/d/Y h:ia") ?> </td>
 		</tr>
 	</table>
 
@@ -50,38 +56,21 @@ ini_set('display_errors', 'On');
 		<tr>
 			<th colspan="2"> Book Titles & Categories Available </th>
 		</tr>
-		<tr>
-			<td style="text-align: left;"><b> Nonfiction </b></td>
-			<td>
-				<?php
-				// "select name as n, count(title) as c from CATEGORY, BOOK where BOOK.category_id= CATEGORY.id group by name order by c desc"
-				?>
-			</td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><b> Fiction </b></td>
-			<td>
-				
-			</td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><b> Young Adult </b></td>
-			<td>
-				
-			</td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><b> Philosophy </b></td>
-			<td>
-				
-			</td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><b> Psychology </b></td>
-			<td>
-				
-			</td>
-		</tr>
+			<?php
+			$stmt = $pdo -> prepare("SELECT name as n, count(title) as c from CATEGORY, BOOK where BOOK.category_id= CATEGORY.id group by name order by c desc");
+			$stmt -> execute();
+			$result = $stmt -> fetchAll(PDO::FETCH_ASSOC);
+
+			foreach ($result as $r) {
+				echo "<tr>";
+				echo "<td style='text-align: left;'>";	// category name
+				echo $r['n']."</td>";
+				echo "<td style='text-align: left;'>";	// count in category
+				echo $r['c']."</td>";
+				echo "</tr>";
+			}
+
+			?>
 	</table>
 
 
