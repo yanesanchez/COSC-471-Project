@@ -113,7 +113,7 @@ function display_publishers($getPublishers){
 	</script>
 		<header align="center"><h1>Catalog Manager</h1></header> 
 </head>
-<body> 														<!-- most of this is copied from shopping cart -->>
+<body> 														<!-- most of this is copied from shopping cart -->
 		<table align="center" style="border:2px solid grey;">
 		<tr>
 			<td valign = "top"> <!-- cell -->
