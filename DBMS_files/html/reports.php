@@ -23,7 +23,7 @@ ini_set('display_errors', 'On');
 	</style>
 </head>
 <body align="center">
-	<h1> ADMINISTRATOR REPORTS </h1>
+	<h1> ADMINISTRATOR REPORT </h1>
 <main>
 
 	<!-- TOTAL NUMBER of REGISTERED CUSTOMERS in the system AT THE TIME AND DATE OF INQUIRY  -->
@@ -38,9 +38,11 @@ ini_set('display_errors', 'On');
 			$stmt = $pdo -> prepare("SELECT count(*) from USER where type = 'R'");
 			$stmt -> execute();
 			$usersR = $stmt -> fetch(PDO::FETCH_ASSOC);
+
 			foreach ($usersR as $u) {
 				echo $u; 
 			}
+
 			?>
 			</td>
 		</tr>
@@ -61,7 +63,7 @@ ini_set('display_errors', 'On');
 			$stmt -> execute();
 			$result = $stmt -> fetchAll(PDO::FETCH_ASSOC);
 
-			foreach ($result as $r) {
+			foreach ($result as $r)  {
 				echo "<tr>";
 				echo "<td style='text-align: left;'>";	// category name
 				echo $r['n']."</td>";
@@ -85,13 +87,15 @@ ini_set('display_errors', 'On');
 			$stmt -> execute();
 			$monthAvg = $stmt -> fetchAll(PDO::FETCH_ASSOC);
 
-			foreach($monthAvg as $m) {
-				echo "<tr>";echo "<td style='text-align: left;'>";	// month
-				echo $m['month']."</td>";
-				echo "<td style='text-align: left;'>";	// average
-				echo $m['avg']."</td>";
-				echo "</tr>";
+			foreach ($monthAvg as $m) {
+				echo "<tr>";							// start table row
+				echo "<td style='text-align: left;'>";	// 1st column
+				echo $m['month']."</td>";				// month
+				echo "<td style='text-align: left;'>";	// 2nd column
+				echo $m['avg']."</td>";					// average sales
+				echo "</tr>";							// end table row
 			}
+
 			?>
 	</table>
 
@@ -101,11 +105,22 @@ ini_set('display_errors', 'On');
 		<tr>
 			<th colspan="2"> All Book Titles and Reviews </th>
 		</tr>
-		<tr>
 			<?php
 				// "select title, count(description) as c from BOOK, REVIEW where BOOK.isbn = REVIEW.isbn group by title"
+			$stmt = $pdo -> prepare("SELECT title, count(description) as c from BOOK, REVIEW where BOOK.isbn = REVIEW.isbn group by title");
+			$stmt -> execute();
+			$book = $stmt -> fetchAll(PDO::FETCH_ASSOC);
+
+			foreach ($book as $b) {
+				echo "<tr>";
+				echo "<td style='text-align: left;'>";
+				echo $b['title']."</td>";
+				echo "<td style='text-align: left;'>";
+				echo $b['c']."</td>";
+				echo "</tr>";
+			}
+
 			?>
-		</tr>
 	</table>
 </main>
 </body>
