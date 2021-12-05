@@ -113,79 +113,43 @@ function display_publishers($getPublishers){
 	</script>
 		<header align="center"><h1>Catalog Manager</h1></header> 
 </head>
-<body> 														<!-- most of this is copied from shopping cart -->
-	<table align="center" style="border:2px solid blue;">
-		<tr>	<!-- row -->
-			<td> <!-- cell -->
-				<div id="bookdetails" style="overflow:scroll;height:180px;width:450px;border:1px solid black;"> <!-- scroll thingy -->
+<body> 														<!-- most of this is copied from shopping cart -->>
+		<table align="center" style="border:2px solid grey;">
+		<tr>
+			<td valign = "top"> <!-- cell -->
+				<div id="book" style="overflow:auto;height:180px;width:450px;"> <!-- scroll thingy -->
 					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">     <!-- table -->
 						<th>Remove</th><th width='60%'>Book Description</th><th width='10%'>Price</th> <!-- table headers -->
 						<?php display_books($getBooks);?> <!-- display function called in each cell-->
 					</table> <!-- close the table -->
-				</div>  <!-- close the div --> -->
+				</div>  <!-- close the div -->
 			</td>	<!-- close the cell -->
-			<td> <!-- new cell -->
-				<div id="bookdetails" style="overflow:scroll;height:180px;width:250px;border:1px solid black;">
-					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">
-						<th>Remove</th><th>First Name</th><th>Last Name</th><th>ID</th>
-						<?php display_authors($getAuthors);?>
-					</table>
-				</div>
-			</td>
-			<td>
-				<div id="bookdetails" style="overflow:scroll;height:180px;width:250px;border:1px solid black;">
-					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">
-						<th>Remove</th><th>Category</th><th>ID</th>
-						<?php display_categories($getCategories);?> 
-					</table>
-				</div>
-			</td>
-			<td>
-				<div id="bookdetails" style="overflow:scroll;height:180px;width:300px;border:1px solid black;">
-					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">
-						<th>Remove</th><th>Publisher</th><th>ID</th>
-						<?php display_publishers($getPublishers);?>
-					</table>
-				</div>
-			</td>
-		</tr>				<!-- end of row -->
-		<tr>
-			<td align="center">
-				&nbsp;
-			</td>
-		</tr>
-		<tr>										<!-- add table headers -->
-		<td colspan="" align="left">New Book
-			</td>
-			<td colspan="" align="left">New Author
-			</td>		
-			<td colspan="" align="left">New Category
-			</td>		
-			<td colspan="" align="left">New Publisher
+			<td valign = "top"> <!-- cell -->
+				<div id="book" style="overflow:auto;height:180px;width:450px;"> <!-- scroll thingy -->											<!-- add book table -->
+<table style="border:2px solid gray;" WIDTH="100%"> 
+<tr>										<!-- add table headers -->
+		<td colspan="2" align="center">New Book
 			</td>
 </tr>
 <tr>
-<td rowspan="4" align="left">											<!-- add book table -->
-<table style="border:2px solid gray;"> 
-<tr>
 <td>
-	<input type="text" id="title" name="title" placeholder="Title">
+	<input type="text" id="title" name="title" placeholder="Title" style="width: 92%;">
 </td>
 <td>
-	<input type="text" id="auth_id" name="auth_id" placeholder="Author ID">
+	<input type="text" id="auth_id" name="auth_id" placeholder="Author ID" style="width: 92%;">
 </td>
 </tr>																			
 <tr>
 	<td>
-<input type="text" id="cat_id" name="cat_id" placeholder="Category ID">
+<input type="text" id="cat_id" name="cat_id" placeholder="Category ID" style="width: 92%;">
 </td>
 <td>
-<input type="text" id="pub_id" name="pub_id" placeholder="Publisher ID">
+<input type="text" id="pub_id" name="pub_id" placeholder="Publisher ID" style="width: 92%;">
 </td>
 <tr><td>
-<input type="text" id="isbn" name="isbn" placeholder="ISBN"></td>
+<input type="text" id="isbn" name="isbn" placeholder="ISBN" style="width: 92%;"></td>
 <td>
-<input type="text" id="price" name="price" placeholder="Price">
+<input type="text" id="price" name="price" placeholder="Price" style="width: 92%;">
 </td>
 </tr>
 <tr><td align = "center" colspan = "2">						<!-- getElementById('input id')  -->
@@ -194,46 +158,112 @@ function display_publishers($getPublishers){
 														document.getElementById('pub_id').value,document.getElementById('price').value,);return false;">Update</button>
 </td>
 </tr>
+</tr>
 </table>
-			<td valign = "top">											<!-- add author -->
-				<table style="border:2px solid gray;">
-				<tr><td>
-				<input type="text" id="authorf" name="authorf" placeholder="First name">
-				</td></tr>
-				<tr><td>
-				<input type="text" id="authorl" name="authorl" placeholder="Last name">
-				</td></tr>
-				<tr><td>
-				<button name="add_auth" id="add_auth" onClick="add('author', document.getElementById('authorf').value, document.getElementById('authorl').value);return false;">Update</button>
-				</td></tr>
-				</table>	
+</tr>
+</table>
+				</div>  <!-- close the div -->
+			</td>	<!-- close the cell -->
+		</tr>
+		<tr>
+	<table align="center" style="border:2px solid gray;">
+		<tr>
+			<td valign = "top">
+				<div id="authors" style="overflow:auto;height:180px;width:450px;">
+					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">
+						<th>Remove</th><th>First Name</th><th>Last Name</th><th>ID</th>
+						<?php display_authors($getAuthors);?>
+					</table>
+				</div>
 			</td>
-			<td valign = "top">											<!-- add category -->
-				<table style="border:2px solid gray;">
+			<td valign = "top">
+			<div id="authors" style="overflow:auto;height:180px;width:450px;">
+			<table style="border:2px solid gray;"  WIDTH="100%">
+			<tr>
+			<td colspan="2" align="center">New Author
+			</td>	
+</tr>
+<tr>
+					<td valign = "top">											<!-- add author -->
+				
 				<tr><td>
-				<input type="text" id="cat" name="cat" placeholder="Category name">
+				<input type="text" id="authorf" name="authorf" placeholder="First name" style="width: 92%;">
+				</td><td>
+				<input type="text" id="authorl" name="authorl" placeholder="Last name" style="width: 92%;">
+				</td>
+				</tr>
+				<tr><td colspan = "2"  align="center">
+				<button name="add_auth" id="add_auth" onClick="add('author', document.getElementById('authorf').value, document.getElementById('authorl').value);return false;" style="width: 30%;">Update</button>
 				</td></tr>
-				<tr><td>
-				<button name="add_cat" id="add_cat" onClick="add('category', document.getElementById('cat').value, '');return false;">Update</button>
-				</td></tr>
-				</table>	
 			</td>
-			<td valign = "top">											<!-- add publisher -->
-				<table style="border:2px solid gray;">
-				<tr><td>
-				<input type="text" id="pub" name="pub" placeholder="Publisher name">
-				</td></tr>
-				<tr><td>
-				<button name="add_pub" id="add_pub" onClick="add('publisher', document.getElementById('pub').value, '');return false;">Update</button>
-				</td></tr>
-				</table>
-			</td>
-			<td>		
-
+					</table>
+					</tr>
+</table>
+				</div>
 			</td>
 		</tr>
 		<tr>
+		<table align="center" style="border:2px solid gray;">
+		<tr>
+			<td valign = "top">
+				<div id="categories" style="overflow:auto;height:180px;width:450px;">
+					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">
+						<th>Remove</th><th>Category</th><th>ID</th>
+						<?php display_categories($getCategories);?> 
+					</table>
+				</div>
+			</td>
+			<td valign = "top">
+			<div id="categories" style="overflow:auto;height:180px;width:450px;">											<!-- add category -->
+				<table style="border:2px solid gray;" WIDTH="100%">
+				<tr><td align="center">New Category
+				</tr>
+				<tr><td align="center">
+				<input type="text" id="cat" name="cat" placeholder="Category name" style="width: 50%;">
+				</td></tr>
+				<tr><td align="center">
+				<button name="add_cat" id="add_cat" onClick="add('category', document.getElementById('cat').value, '');return false;" style="width: 30%;">Update</button>
+				</td></tr>
+				</table>
+				</tr>
+</table>
+				</div>	
+			</td>
+		</tr>
+		<tr>
+		<table align="center" style="border:2px solid gray;">
+		<tr>
+			<td valign = "top">
+				<div id="publishers" style="overflow:auto;height:180px;width:450px;">
+					<table align="center" BORDER="2" CELLPADDING="2" CELLSPACING="2" WIDTH="100%">
+						<th>Remove</th><th>Publisher</th><th>ID</th>
+						<?php display_publishers($getPublishers);?>
+					</table>
+				</div>
+			</td>
+			<td valign = "top">
+			<div id="categories" style="overflow:auto;height:180px;width:450px;">											<!-- add category -->
+				<table style="border:2px solid gray;"  WIDTH="100%">
+				<tr>	
+			<td  align="center">New Publisher
+			</td></tr>
+				<tr><td align="center">
+				<input type="text" id="pub" name="pub" placeholder="Publisher name" style="width: 50%;">
+				</td></tr>
+				<tr><td align = "center">
+				<button name="add_pub" id="add_pub" onClick="add('publisher', document.getElementById('pub').value, '');return false;" style="width: 30%;">Update</button>
+				</td></tr>
+				</table>
+				</tr>
+</table>
+				</div>	
+			</td>
+		</tr>
 	</table>
+</td>				<!-- end of row -->
+<td>
+</tr>
+</table>
 </body>
 </html>
 
