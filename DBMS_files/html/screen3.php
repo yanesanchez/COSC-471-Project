@@ -5,6 +5,8 @@
 require_once('../PDO_connect.php');
 ob_start();
 session_start();
+//error_reporting(-1);
+//ini_set('display_errors', 'On');
 
 if(isset($_SESSION['valid']) && !empty($_SESSION['valid'])){		// registered user
 	if(!empty($_SESSION['user_id'])){
@@ -205,8 +207,8 @@ function display_error($searchfor){
 			<table>
 			<?php
 			// error checking -----------
-			//if(count($result) > 0)
-			//display_books($result, $cart_contents, $searchfor, $searchlist, $category);
+			if(count($result) > 0)
+				display_books($result, $cart_contents, $searchfor, $searchlist, $category);
 			// else
 			// display_error($searchfor);
 			?>
