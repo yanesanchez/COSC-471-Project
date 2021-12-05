@@ -25,7 +25,7 @@ ini_set('display_errors', 'On');
 <body align="center">
 	<h1> ADMINISTRATOR REPORTS </h1>
 <main>
-	
+
 	<!-- TOTAL NUMBER of REGISTERED CUSTOMERS in the system AT THE TIME AND DATE OF INQUIRY  -->
 	<table>
 		<tr>
@@ -77,13 +77,22 @@ ini_set('display_errors', 'On');
 	<!-- AVERAGE MONTHLY SALES, in dollars, for the CURRENT YEAR, ordered BY MONTH -->
 	<table>
 		<tr>
-			<th colspan="2"> Average Monthly Sales </th>
+			<th colspan="2"> Average Monthly Sales <?php date("Y"); ?> </th>
 		</tr>
-		<tr>
 			<?php
 				// "select MONTHNAME(date) as month, truncate(avg(total),2) as avg from ORDER_PLACED where YEAR(date) = YEAR(CURDATE()) group by MONTHNAME(date)"
+			$stmt = $pdo -> prepare("SELECT MONTHNAME(date) as month, truncate(avg(total),2) as avg from ORDER_PLACED where YEAR(date) = YEAR(CURDATE()) group by MONTHNAME(date)");
+			$stmt -> execute();
+			$monthAvg = $stmt -> fetchAll(PDO::FETCH_ASSOC);
+
+			foreach($monthAvg as $m) {
+				echo "<tr>";echo "<td style='text-align: left;'>";	// month
+				echo $m['month']."</td>";
+				echo "<td style='text-align: left;'>";	// average
+				echo $m['avg']."</td>";
+				echo "</tr>";
+			}
 			?>
-		</tr>
 	</table>
 
 
