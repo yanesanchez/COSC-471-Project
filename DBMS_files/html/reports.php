@@ -92,7 +92,7 @@ ini_set('display_errors', 'On');
 				echo "<td style='text-align: left;'>";	// 1st column
 				echo $m['month']."</td>";				// month
 				echo "<td style='text-align: left;'>";	// 2nd column
-				echo $m['avg']."</td>";					// average sales
+				echo "$".$m['avg']."</td>";					// average sales
 				echo "</tr>";							// end table row
 			}
 

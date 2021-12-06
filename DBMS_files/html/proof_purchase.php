@@ -65,7 +65,7 @@ $order_id = $order_id[0];
 //print_r($order_id);
 foreach($cart as $c){
 
-	$stmt = $pdo -> prepare('insert into CART_ITEM (cart_id , isbn, price, quantity)
+	$stmt = $pdo -> prepare('insert into ORDER_ITEM (order_id , isbn, cost, quantity)
 							values ('.$order_id.', \''.$c['isbn'].'\', '.$c['p'].', '.$c['qty'].')');
 							$stmt -> execute();
 }
