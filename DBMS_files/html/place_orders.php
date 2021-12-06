@@ -5,7 +5,7 @@ session_start();
 
 error_reporting(-1);
 ini_set('display_errors', 'On');
-print_r($_GET);
+//print_r($_GET);
 if(isset($_GET['orderId'])){
 	$placeOrder = $pdo ->prepare("update ORDER_PLACED set placed = 1 where id = ".$_GET['orderId']);
 	$placeOrder->execute();
@@ -30,9 +30,7 @@ $disabled = ' disabled';
 }
 
 echo '<tr><td rowspan = ""><b>No. '.$row['id'].'</b></br><b> User: </b>'.$row['username'].'</br><b>Address: </b>'.$row['address'].'</br><b>Total: $</b>'.$row['total'].'</td>
-<td><b>Status: </b>'.$status.'</br>'.'<button name= \'place_order\' id= \'place_order\' onClick= \'order('.'"'.$row['id'].'"'.');return false;\''.$disabled.'>Order</button></td></tr>';
-
-
+<td align = "center"><b>Status: </b>'.$status.'</br>'.'<button name= \'place_order\' id= \'place_order\' onClick= \'order('.'"'.$row['id'].'"'.');return false;\''.$disabled.'>Order</button></td></tr>';
 
 }
 }
