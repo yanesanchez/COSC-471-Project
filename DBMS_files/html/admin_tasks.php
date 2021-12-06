@@ -5,12 +5,16 @@ session_start();
 
 error_reporting(-1);
 ini_set('display_errors', 'On');
-// print_r($_SESSION);
+//print_r($_SESSION);
+if(!isset($_SESSION['admin']) || $_SESSION['admin'] == false){
+	header("Location: index.php"); 
+	exit;
+}
 ?>
 
 <!DOCTYPE HTML>
 <head>
-	<title> ADMIN TASKS </title>
+	<title>ADMIN TASKS</title>
 </head>
 <body>
 	<table align="center" style="border:2px solid blue;">
@@ -22,7 +26,7 @@ ini_set('display_errors', 'On');
 			</form>
 		</tr>
 		<tr>
-			<form action="place_orders.php" method="post" id="orders">
+			<form action=" " method="post" id="orders">
 			<td align="center">
 				<input type="submit" name="place_orders" id="place_orders" value="Place Orders" style="width:200px;">
 			</td>

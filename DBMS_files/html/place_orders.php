@@ -5,7 +5,7 @@ session_start();
 
 error_reporting(-1);
 ini_set('display_errors', 'On');
-print_r($_GET);
+//print_r($_GET);
 if(isset($_GET['orderId'])){
 	$placeOrder = $pdo ->prepare("update ORDER_PLACED set placed = 1 where id = ".$_GET['orderId']);
 	$placeOrder->execute();
@@ -29,8 +29,8 @@ $status = "ordered";
 $disabled = ' disabled';
 }
 
-echo '<tr><td rowspan = ""><b>No. '.$row['id'].'</b></br><b> User: </b>'.$row['username'].'</br><b>Address: </b>'.$row['address'].'</br><b>Total: $</b>'.$row['total'].'</td>
-<td><b>Status: </b>'.$status.'</br>'.'<button name= \'place_order\' id= \'place_order\' onClick= \'order('.'"'.$row['id'].'"'.');return false;\''.$disabled.'>Order</button></td></tr>';
+echo '<tr><td ><div id = "info"><div id = "left"><b>No. '.$row['id'].'</b></br><b> User: </b>'.$row['username'].'</div><div id = "address"><b>Address: </b>'.$row['address'].'</div><div id = "right"><b>Date: </b>'.$row['date'].'</br><b>Total: $</b>'.$row['total'].'</div></div></td>
+<td align = "center" ><div id = "button_box"><b>Status: </b>'.$status.'</br>'.'<button name= \'place_order\' id= \'place_order\' onClick= \'order('.'"'.$row['id'].'"'.');return false;\''.$disabled.'>Order</button></td></div></tr>';
 
 
 
@@ -41,6 +41,38 @@ echo '<tr><td rowspan = ""><b>No. '.$row['id'].'</b></br><b> User: </b>'.$row['u
 <!DOCTYPE html>
 <html>
 <head>
+	<style>
+#info{
+	position: relative
+		}
+#left {
+    float: left;
+    width: 50%;
+    padding: 0;
+    margin: 0;
+}
+#right {
+    float: right;
+    width: 50%;
+    padding: 0;
+    margin: 0;
+}
+}
+#address {
+	position: absolute; 
+	bottom: 0;
+    float: center;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+#button_box {
+    float: center;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+</style>
 	<title>PLACE ORDERS</title>
 	<script>
 	function order(id){

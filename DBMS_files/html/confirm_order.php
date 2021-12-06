@@ -3,9 +3,9 @@ require_once('../PDO_connect.php');
 ob_start();
 session_start();
 
-//error_reporting(-1);
-//ini_set('display_errors', 'On');
-//print_r($_SESSION);
+error_reporting(-1);
+ini_set('display_errors', 'On');
+print_r($_SESSION);
 if(!empty($_SESSION['user_id']) && (!empty($_SESSION['temp']) || $_SESSION['temp'] == false || !isset($_SESSION['temp']))){
 $stmt = $pdo -> prepare("select * from USER where id = ".trim($_SESSION['user_id']));
 $stmt -> execute();
@@ -46,7 +46,7 @@ function display_cart($cart){
 	<form id="buy" action="proof_purchase.php" method="post">
 	<tr>
 	<td>
-	Shipping Address: <?php echo $user_info['address']; ?>
+	Shipping Address:
 	</td>
 	</tr>
 	<td colspan="2">
