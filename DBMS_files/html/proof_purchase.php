@@ -17,12 +17,12 @@ if($_POST['cardgroup'] == 'new_card'){
 					$stmt -> execute();
 }
 
-$stmt = $pdo -> prepare("select * from USER where id = ".trim($_SESSION['user_id']));
+$stmt = $pdo -> prepare("SELECT * from USER where id = ".trim($_SESSION['user_id']));
 $stmt -> execute();
 $user_info = $stmt -> fetch(PDO::FETCH_ASSOC);
 //echo "user : ";
 //print_r($user_info);
-$stmt = $pdo -> prepare("select title, CART_ITEM.isbn as isbn, CART_ITEM.price as p, 
+$stmt = $pdo -> prepare("SELECT title, CART_ITEM.isbn as isbn, CART_ITEM.price as p, 
 (select first_name from AUTHOR where BOOK.author_id = id) as Author_fname, 
 (select last_name from AUTHOR where BOOK.author_id = id) as Author_lname,  
 (select name from CATEGORY where BOOK.category_id = id) as Category, 
@@ -56,7 +56,7 @@ else{
 
 
 $stmt = $pdo -> prepare("INSERT into ORDER_PLACED (user_id, total, date) 
-						VALUES (".trim($_SESSION['user_id']).", $subtotal+$shipping, '$insert_date'");
+						VALUES (".trim($_SESSION['user_id']).", $subtotal+$shipping, '$insert_date')");
 $stmt -> execute();
 $stmt = $pdo -> prepare("SELECT LAST_INSERT_ID()");
 $stmt -> execute();
@@ -65,7 +65,7 @@ $order_id = $order_id[0];
 //print_r($order_id);
 foreach($cart as $c){
 
-	$stmt = $pdo -> prepare('insert into ORDER_ITEM (order_id , isbn, cost, quantity)
+	$stmt = $pdo -> prepare('insert into CART_ITEM (cart_id , isbn, price, quantity)
 							values ('.$order_id.', \''.$c['isbn'].'\', '.$c['p'].', '.$c['qty'].')');
 							$stmt -> execute();
 }
