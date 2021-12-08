@@ -11,15 +11,19 @@ session_start();
 error_reporting(-1);
 ini_set('display_errors', 'On');
 
-if(!isset($_SESSION['admin']) || empty($_SESSION['admin'])){                                                       // create dummy registered user for temp user on search screen and populate it with these info
-	header("Location: index.php");
+if(empty($_SESSION['admin'])){                                                       // create dummy registered user for temp user on search screen and populate it with these info
+	header("Location: customer_registration.php");
 	exit;
 	$stmt=null;
 	$pdo=null;
 }
+else{
+	require_once('../PDO_connect.php');
+	$getName = $pdo -> prepare("select username from USER where id = ".$_SESSION['user_id']);
+	$getName->execute();
+	$getName = $getName->fetch(PDO::FETCH_COLUMN);
 
-
-else if(isset($_POST['update_submit'])){
+	if(isset($_POST['update_submit'])){
 	//echo "register submit";
 	//print_r($_POST);
 	//print_r($_SESSION);
@@ -53,73 +57,65 @@ else if(isset($_POST['update_submit'])){
         $lastname = trim($_POST['lastname']);
     }
 
-    if(empty($_POST['address'])){
+   /* if(empty($_POST['address'])){
         $data_missing[] = 'address';
     }
     else {
         $address = trim($_POST['address']);
     }
-
     if(empty($_POST['city'])){
         $data_missing[] = 'city';
     }
     else {
         $city = trim($_POST['city']);
     }
-
     if(empty($_POST['state'])){
         $data_missing[] = 'state';
     }
     else {
         $state = trim($_POST['state']);
     }
-
     if(empty($_POST['zip'])){
         $data_missing[] = 'zip';
     }
-
     else {
         $zip = trim($_POST['zip']);
     }
-
     if(empty($_POST['credit_card'])){
         $data_missing[] = 'credit_card';
     }
     else {
         $credit_card = trim($_POST['credit_card']);
     }
-
     if(empty($_POST['card_number'])){
         $data_missing[] = 'card_number';
     }
     else {
         $card_number = trim($_POST['card_number']);
     }
-
     if(empty($_POST['expiration'])){
         $data_missing[] = 'expiration';
     }
     else {
         $expiration = $_POST['expiration'];
-    }
+    }*/
 
     if(empty($data_missing)){
         require_once('../PDO_connect.php');
 
-        $stmt = $pdo -> prepare("update USER set pin = :pin, first_name = :first_name, last_name = :last_name,
-								address = :address, city = :city, state = :state, zip = :zip, credit_card = :credit_card, card_number = :card_number, expiration = :expiration
+        $stmt = $pdo -> prepare("update USER set pin = :pin, first_name = :first_name, last_name = :last_name
 								where id = ".$_SESSION['user_id']);
-
+																	//,address = :address, city = :city, state = :state, zip = :zip, credit_card = :credit_card, card_number = :card_number, expiration = :expiration
 	    	$stmt->bindParam(':pin', $pin);
 	    	$stmt->bindParam(':first_name', $firstname);
 	    	$stmt->bindParam(':last_name', $lastname);
-	    	$stmt->bindParam(':address', $address);
+	    	/*$stmt->bindParam(':address', $address);
 	    	$stmt->bindParam(':city', $city);
 	    	$stmt->bindParam(':state', $state);
 	    	$stmt->bindParam(':zip', $zip);
 	    	$stmt->bindParam(':credit_card', $credit_card);
 	    	$stmt->bindParam(':card_number', $card_number);
-	    	$stmt->bindParam(':expiration', $expiration);
+	    	$stmt->bindParam(':expiration', $expiration);*/
 
 	    	$stmt->execute();
 
@@ -127,7 +123,7 @@ else if(isset($_POST['update_submit'])){
 
         if($affected_rows > 0){
 
-            header("Location: screen2.php"); 
+            header("Location: admin_tasks.php"); 
             exit;
             $stmt=null;
 			$pdo=null;
@@ -135,7 +131,7 @@ else if(isset($_POST['update_submit'])){
         }
 
         else{
-            header("Location: customer_registration.php");
+            header("Location: update_adminprofile.php");
 			exit;
             $stmt=null;
 			$pdo=null;
@@ -143,7 +139,7 @@ else if(isset($_POST['update_submit'])){
     }
 
 }
-
+}
 ?>
 
 </head>
@@ -154,7 +150,8 @@ else if(isset($_POST['update_submit'])){
 			<td align="right">
 				Username: 
 			</td>
-			<td colspan="3" align="center">
+			<td colspan="1" align="left">
+			<?php echo $getName; ?>
 							</td>
 		</tr>
 		<tr>
@@ -187,12 +184,12 @@ else if(isset($_POST['update_submit'])){
 				<input type="text" id="lastname" name="lastname" <?php if(!empty($_POST['lastname'])) echo " value=\"".$_POST['lastname'].'"'?>placeholder="Enter your lastname">
 			</td>
 		</tr>
-		<tr>
+		<!--<tr>
 			<td align="right">
 				Address<span style="color:red">*</span>:
 			</td>
 			<td colspan="3" align="left">
-				<input type="text" id="address" name="address"<?php if(!empty($_POST['address'])) echo " value=\"".$_POST['address'].'"'?>>
+				<input type="text" id="address" name="address"<?/*php if(!empty($_POST['address'])) echo " value=\"".$_POST['address'].'"'*/?>>
 			</td>
 		</tr>
 		<tr>
@@ -200,7 +197,7 @@ else if(isset($_POST['update_submit'])){
 				City<span style="color:red">*</span>:
 			</td>
 			<td colspan="3" align="left">
-				<input type="text" id="city" name="city"<?php if(!empty($_POST['city'])) echo " value=\"".$_POST['city'].'"'?>>
+				<input type="text" id="city" name="city"<?/*php if(!empty($_POST['city'])) echo " value=\"".$_POST['city'].'"'*/?>>
 			</td>
 		</tr>
 		<tr>
@@ -219,7 +216,7 @@ else if(isset($_POST['update_submit'])){
 				Zip<span style="color:red">*</span>:
 			</td>
 			<td align="left">
-				<input type="text" id="zip" name="zip"<?php if(!empty($_POST['zip'])) echo " value=\"".$_POST['zip'].'"'?>>
+				<input type="text" id="zip" name="zip"<?/*php if(!empty($_POST['zip'])) echo " value=\"".$_POST['zip'].'"'*/?>>
 			</td>
 		</tr>
 		<tr>
@@ -227,7 +224,7 @@ else if(isset($_POST['update_submit'])){
 				Credit Card<span style="color:red">*</span>
 			</td>
 			<td align="left">
-				<select id="credit_card" name="credit_card"<?php if(!empty($_POST['credit_card'])) echo " value=\"".$_POST['credit_card'].'"'?>>
+				<select id="credit_card" name="credit_card"<?php /*if(!empty($_POST['credit_card'])) echo " value=\"".$_POST['credit_card'].'"'*/?>>
 				<option selected disabled>select a card type</option>
 				<option>VISA</option>
 				<option>MASTER</option>
@@ -235,7 +232,7 @@ else if(isset($_POST['update_submit'])){
 				</select>
 			</td>
 			<td colspan="2" align="left">
-				<input type="text" id="card_number" name="card_number" <?php if(!empty($_POST['card_number'])) echo "value=\"".$_POST['card_number'].'"'?> placeholder="Credit card number">
+				<input type="text" id="card_number" name="card_number" <?php /*if(!empty($_POST['card_number'])) echo "value=\"".$_POST['card_number'].'"'*/?> placeholder="Credit card number">
 			</td>
 		</tr>
 		<tr>
@@ -243,9 +240,9 @@ else if(isset($_POST['update_submit'])){
 				Expiration Date<span style="color:red">*</span>:
 			</td>
 			<td colspan="2" align="left">
-				<input type="text" id="expiration" name="expiration" <?php if(!empty($_POST['expiration'])) echo "value=\"".$_POST['expiration'].'"'?> placeholder="MM/YY">
+				<input type="text" id="expiration" name="expiration" <?/*php if(!empty($_POST['expiration'])) echo "value=\"".$_POST['expiration'].'"'*/?> placeholder="MM/YY">
 			</td>
-		</tr>
+		</tr>-->
 		<tr>
 			<td align="right" colspan="2">
 				<input type="submit" id="update_submit" name="update_submit" value="Update">
