@@ -7,7 +7,7 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 //print_r($_POST);
 //print_r($_SESSION);
-if(isset($_POST['btnbuyit']) && isset($_POST['user_id'])){
+if(isset($_POST['btnbuyit']) && isset($_SESSION['user_id'])){
 if($_POST['cardgroup'] == 'new_card'){
 	$credit_card = $_POST['credit_card'];
 	$card_number = $_POST['card_number'];

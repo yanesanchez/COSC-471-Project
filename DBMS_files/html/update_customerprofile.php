@@ -140,7 +140,7 @@ else{
         }
 
         else{
-            header("Location: customer_registration.php");
+            header("Location: update_customerprofile.php");
 			exit;
             $stmt=null;
 			$pdo=null;

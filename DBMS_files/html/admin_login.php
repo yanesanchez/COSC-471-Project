@@ -23,8 +23,8 @@ if(isset($_POST['adminname']) && !empty($_POST['adminname']) && !empty($_POST['p
 
 	if ($count == 1){
 
-	//$row = $stmt->fetch();
-	//$uid = $row['id'];
+	$row = $stmt->fetch();
+	$uid = $row['id'];
 
 	//$getCart = $pdo -> prepare("SELECT id from SHOPPING_CART WHERE SHOPPING_CART.user_id = $uid");
 	//$getCart -> execute();

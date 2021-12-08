@@ -6,7 +6,7 @@ session_start();
 //error_reporting(-1);
 //ini_set('display_errors', 'On');
 //print_r($_GET);
-if(isset($_GET['checkout_submit']) && $_GET['checkout_submit'] == "Proceed to Checkout" && isset($_POST['user_id'])){
+if(isset($_GET['checkout_submit']) && $_GET['checkout_submit'] == "Proceed to Checkout" && isset($_SESSION['user_id'])){
 if(!empty($_SESSION['user_id']) && (!empty($_SESSION['temp']) || $_SESSION['temp'] == false || !isset($_SESSION['temp']))){
 $stmt = $pdo -> prepare("select * from USER where id = ".trim($_SESSION['user_id']));
 $stmt -> execute();
