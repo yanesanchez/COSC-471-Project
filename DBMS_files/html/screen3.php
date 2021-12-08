@@ -158,7 +158,7 @@ foreach ($result as $row){
 			$book_details .= ' disabled';
 
 	$book_details .= '> Add to Cart</button></td><td rowspan= \'2\'  align= \'left\'> '.str_replace("'", "\'", $row['Title']).' </br>
-		By '.$row['Author_fname'].' '.$row['Author_lname'].':</b> '.$row['Publisher'].',</br><b>ISBN:</b> '.$row['ISBN'].'</t> <b>Price:</b> '.$row['Price'].'</td></tr><tr>
+		By '.$row['Author_fname'].' '.$row['Author_lname'].':</b> '.$row['Publisher'].',</br><b>ISBN:</b> '.$row['ISBN'].'</t> <b>Price: </b> '.'$'.$row['Price'].'</td></tr><tr>
 		<td align= \'left\'><button name= \'review\' id= \'review\' onClick= \'review("'.$row['ISBN'].'", "'.$row['Title'].'")\''.'>Reviews</button></td></tr><tr>
 		<td colspan= \'2\'><p>_______________________________________________</p></td></tr>';
 

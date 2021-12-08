@@ -48,7 +48,7 @@ function display($result){
 		//	echo $row['Title'].": ".$row['ISBN'];
 	foreach ($result as $row){
 	echo '<tr><td><button name=\'delete\' id=\'delete\' onClick=\'del('.'"'.$row['ISBN'].'"'.');return false;\'>Delete Item</button></td><td>'.$row['Title'].'</br>
-	<b>By</b>'.$row['Author_fname'].' '.$row['Author_lname'].'</br><b>Publisher:</b> '.$row['Publisher'].'</td><td><input id= \'qty['.$row['ISBN'].']\' name=\'qty['.$row['ISBN'].']\' value=\''.$row['qty'].'\' size=\'1\' /></td><td>'.$row['Price'].'</td></tr>';
+	<b>By</b>'.$row['Author_fname'].' '.$row['Author_lname'].'</br><b>Publisher:</b> '.$row['Publisher'].'</td><td><input id= \'qty['.$row['ISBN'].']\' name=\'qty['.$row['ISBN'].']\' value=\''.$row['qty'].'\' size=\'1\' /></td><td>'.'$'.$row['Price'].'</td></tr>';
 	}
 }
 
