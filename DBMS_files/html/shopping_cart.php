@@ -68,7 +68,7 @@ function display($result){
 		<tr>
 			<td align="center">
 				<form id="checkout" action="confirm_order.php" method="get">
-					<input type="submit" name="checkout_submit" id="checkout_submit" value="Proceed to Checkout">
+					<input type="submit" name="checkout_submit" id="checkout_submit" value="Proceed to Checkout" <?php if(empty($result)){ echo " disabled";}?>>
 				</form>
 			</td>
 			<td align="center">

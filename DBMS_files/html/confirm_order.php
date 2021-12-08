@@ -3,9 +3,10 @@ require_once('../PDO_connect.php');
 ob_start();
 session_start();
 
-error_reporting(-1);
-ini_set('display_errors', 'On');
-print_r($_SESSION);
+//error_reporting(-1);
+//ini_set('display_errors', 'On');
+//print_r($_GET);
+if(isset($_GET['checkout_submit']) && $_GET['checkout_submit'] == "Proceed to Checkout" && isset($_POST['user_id'])){
 if(!empty($_SESSION['user_id']) && (!empty($_SESSION['temp']) || $_SESSION['temp'] == false || !isset($_SESSION['temp']))){
 $stmt = $pdo -> prepare("select * from USER where id = ".trim($_SESSION['user_id']));
 $stmt -> execute();
@@ -20,6 +21,13 @@ $stmt = $pdo -> prepare("select title,
 where CART_ITEM.cart_id = ".$_SESSION['cart_id']." and BOOK.isbn = CART_ITEM.isbn
 group by title, Author_fname, Author_lname, Category, Publisher, CART_ITEM.quantity");
 $stmt -> execute();
+$rowcount = $stmt -> rowCount();
+if($rowcount > 0)
+	$cart = $stmt -> fetchAll(PDO::FETCH_ASSOC);
+else{
+	header("Location: screen2.php"); 
+	exit;
+}
 $cart = $stmt -> fetchAll(PDO::FETCH_ASSOC);
 }
 else
@@ -35,6 +43,11 @@ function display_cart($cart){
 		echo '<tr><td>'.$c['title'].'</br><b>By</b> '.$c['Author_fname'].' '.$c['Author_lname'].'</br><b>Publisher:</b> '.$c['Publisher'].'</td><td>'.$c['qty'].'</td><td>$'.$c['Price'].'</td></tr>';
 	}
 }
+}
+else{
+	header("Location: screen2.php"); 
+	exit;
+}
 ?>
 <!DOCTYPE HTML>
 <head>
@@ -46,7 +59,7 @@ function display_cart($cart){
 	<form id="buy" action="proof_purchase.php" method="post">
 	<tr>
 	<td>
-	Shipping Address:
+	Shipping Address: <?php echo $user_info['address']; ?>
 	</td>
 	</tr>
 	<td colspan="2">

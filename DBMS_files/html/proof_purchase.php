@@ -5,8 +5,9 @@ session_start();
 
 error_reporting(-1);
 ini_set('display_errors', 'On');
+//print_r($_POST);
 //print_r($_SESSION);
-
+if(isset($_POST['btnbuyit']) && isset($_POST['user_id'])){
 if($_POST['cardgroup'] == 'new_card'){
 	$credit_card = $_POST['credit_card'];
 	$card_number = $_POST['card_number'];
@@ -17,12 +18,12 @@ if($_POST['cardgroup'] == 'new_card'){
 					$stmt -> execute();
 }
 
-$stmt = $pdo -> prepare("select * from USER where id = ".trim($_SESSION['user_id']));
+$stmt = $pdo -> prepare("SELECT * from USER where id = ".trim($_SESSION['user_id']));
 $stmt -> execute();
 $user_info = $stmt -> fetch(PDO::FETCH_ASSOC);
 //echo "user : ";
 //print_r($user_info);
-$stmt = $pdo -> prepare("select title, CART_ITEM.isbn as isbn, CART_ITEM.price as p, 
+$stmt = $pdo -> prepare("SELECT title, CART_ITEM.isbn as isbn, CART_ITEM.price as p, 
 (select first_name from AUTHOR where BOOK.author_id = id) as Author_fname, 
 (select last_name from AUTHOR where BOOK.author_id = id) as Author_lname,  
 (select name from CATEGORY where BOOK.category_id = id) as Category, 
@@ -31,8 +32,12 @@ where CART_ITEM.cart_id = ".$_SESSION['cart_id']." and BOOK.isbn = CART_ITEM.isb
 group by title, Author_fname, Author_lname, isbn, p, Category, Publisher, CART_ITEM.quantity");
 $stmt -> execute();
 $rowcount = $stmt -> rowCount();
-if($rowcount > 0){
-$cart = $stmt -> fetchAll(PDO::FETCH_ASSOC);
+if($rowcount > 0)
+	$cart = $stmt -> fetchAll(PDO::FETCH_ASSOC);
+else{
+	header("Location: screen2.php"); 
+	exit;
+}
 
 //print_r($cart);
 $subtotal = 0;
@@ -55,8 +60,8 @@ else{
 }
 
 
-$stmt = $pdo -> prepare("insert into ORDER_PLACED (user_id, total, date, card_number, credit_card, expiration) 
-						VALUES ('".trim($_SESSION['user_id'])."', $subtotal+$shipping, '$insert_date', $card_number, '$credit_card', '$card_exp')");
+$stmt = $pdo -> prepare("INSERT into ORDER_PLACED (user_id, total, date) 
+						VALUES (".trim($_SESSION['user_id']).", $subtotal+$shipping, '$insert_date')");
 $stmt -> execute();
 $stmt = $pdo -> prepare("SELECT LAST_INSERT_ID()");
 $stmt -> execute();
@@ -74,6 +79,11 @@ $stmt = $pdo -> prepare("delete from CART_ITEM where cart_id = ".$_SESSION['cart
 $stmt -> execute();
 $stmt = $pdo -> prepare("delete from SHOPPING_CART  where user_id = ".$_SESSION['user_id']);
 $stmt -> execute();
+}
+else{
+	header("Location: screen2.php"); 
+	exit;
+}
 
 function display_order($cart){
 	require_once('../PDO_connect.php');
@@ -82,7 +92,8 @@ function display_order($cart){
 		echo '<tr><td>'.$c['title'].'</br><b>By</b> '.$c['Author_fname'].' '.$c['Author_lname'].'</br><b>Publisher:</b> '.$c['Publisher'].'</td><td>'.$c['qty'].'</td><td>$'.$c['Price'].'</td></tr>';
 	}
 }
-}
+
+
 ?>
 
 <!DOCTYPE HTML>
